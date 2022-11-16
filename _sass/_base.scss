@@ -501,6 +501,7 @@ footer.sticky-bottom {
       .abbr {
         height: 2rem;
         margin-bottom: 0.5rem;
+        text-align: center; // Junshen
         abbr {
           display: inline-block;
           background-color: var(--global-theme-color);
@@ -520,18 +521,28 @@ footer.sticky-bottom {
       }
       .title {
         font-weight: bolder;
+        max-width: 550px; // Junshen
+        font-size: 1.125rem;
+      }
+      .periodical {
+        font-size: 0.875rem; // Junshen
       }
       .author {
+        font-size: 0.875rem; // Junshen
         a {
-          border-bottom: 1px dashed var(--global-theme-color);
+          border-bottom: 1px dashed var(--global-text-color); // Junshen
+          color: var(--global-text-color); // Junshen
           &:hover {
               border-bottom-style: solid;
               text-decoration: none;
+              color: var(--global-text-color); // Junshen
           }
         }
         > em {
-          border-bottom: 1px solid;
+          //border-bottom: 1px solid;
           font-style: normal;
+          font-weight: bolder;
+          color: var(--global-theme-color);
         }
         > span.more-authors {
           color: var(--global-text-color-light);
