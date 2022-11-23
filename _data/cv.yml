@@ -34,7 +34,7 @@
   contents:
     - title: Research Assistant
       institution: Massachusetts Institute of Technology
-      year: 2018 - 2023
+      year: 2018 - present
       description:
         - 2D-to-3D reconstruction
         - Image quality assessment
@@ -56,6 +56,11 @@
       description:
         - Multi-modal image registration with neural ODE
         - Differentiable Digitally Reconstructed Radiograph (DRR)
+    - title: Research Assistant
+      institution: Stanford University
+      year: Jun - Aug 2017
+      description:
+        - Low dose PET reconstruction with deep learning
 
 # - title: Open Source Projects
 #   type: time_table
