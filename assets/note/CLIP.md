@@ -4,7 +4,7 @@ title: Learning Transferable Visual Models From Natural Language Supervision
 
 url: <https://arxiv.org/pdf/2103.00020.pdf>
 
-## Abstract
+## Introduction
 
 The authors demonstrate that the simple pre-training task of predicting which caption goes with which image is an efficient and scalable way to learn SOTA image representations from scratch
 
