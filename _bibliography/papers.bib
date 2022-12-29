@@ -233,6 +233,31 @@ abstract = { PurposeTo reduce radiotracer requirements for amyloid PET/MRI witho
 
 # misc
 
+@article{vasung2022cross,
+  title={Cross-sectional Observational Study of Typical in-utero Fetal Movements using Machine Learning},
+  author={Vasung*, Lana and Xu*, Junshen and Abaci-Turk*, Esra and Zhou, Cindy and Holland, Elizabeth and Barth, William H and Barnewolt, Carol and Connolly, Susan and Estroff, Judy and Golland, Polina and others},
+  journal={Developmental Neuroscience},
+  year={2022},
+  publisher={Karger Publishers},
+  abbr={DNE},
+  url="https://doi.org/10.1159/000528757",
+  abstract={Early variations of fetal movements are the hallmark of a healthy developing central nervous system. However, there are no automatic methods to quantify the complex 3D motion of the developing fetus in-utero. The aim of this prospective study was to use machine learning (ML) on in-utero MRI to perform quantitative kinematic analysis of fetal limb movement, assessing the impact of maternal, placental, and fetal factors. In this cross-sectional, observational study, we used 76 sets of fetal (24-40 gestational weeks (GW)) blood oxygenation level-dependent (BOLD) MRI scans of 52 women (18-45 years old) during typical pregnancies. Pregnant women were scanned for 5 to 10 minutes while breathing room air (21% O2) and for 5 to 10 minutes while breathing 100% FiO2 in supine and/or lateral position. BOLD acquisition time was 20 minutes in total with an effective temporal resolution of approximately 3 seconds. To quantify upper and lower limb kinematics, we used a 3D convolutional neural network (CNN) previously trained to track fetal key points (wrists, elbows, shoulders, ankles, knees, hips) on similar BOLD time series. Tracking was visually assessed, errors manually corrected and the absolute movement time (AMT) for each joint was calculated. To identify variables that had a significant association with AMT, we constructed a mixed-model ANOVA with interaction terms. Fetuses showed significantly longer duration of limb movements during maternal hyperoxia. We also found a significant centrifugal increase of AMT across limbs and significantly longer AMT of upper extremities < 31 GW and longer AMT of lower extremities > 35 GW. In conclusion, using ML we successfully quantified complex 3D fetal limb motion in-utero and across gestation, showing maternal factors (hyperoxia) and fetal factors (gestational age, joint) impact movement. Quantification of fetal motion on MRI is a potential new biomarker of fetal health and neuromuscular development.}
+}
+
+@article{https://doi.org/10.48550/arxiv.2208.13003,
+  doi = {10.48550/ARXIV.2208.13003},
+  author = {Arefeen, Yamin and Xu, Junshen and Zhang, Molin and Dong, Zijing and Wang, Fuyixue and White, Jacob and Bilgic, Berkin and Adalsteinsson, Elfar},
+  keywords = {Signal Processing (eess.SP), Medical Physics (physics.med-ph), FOS: Electrical engineering, electronic engineering, information engineering, FOS: Electrical engineering, electronic engineering, information engineering, FOS: Physical sciences, FOS: Physical sciences},
+  title = {Latent Signal Models: Learning Compact Representations of Signal Evolution for Improved Time-Resolved, Multi-contrast MRI},
+  publisher = {arXiv},
+  year = {2022},
+  copyright = {arXiv.org perpetual, non-exclusive license},
+  journal={arXiv preprint arXiv:2208.13003},
+  arXiv = {2208.13003},
+  abbr="arXiv",
+  abstract = {Purpose: Training auto-encoders on simulated signal evolution and inserting the decoder into the forward model improves reconstructions through more compact, Bloch-equation-based representations of signal in comparison to linear subspaces. Methods: Building on model-based nonlinear and linear subspace techniques that enable reconstruction of signal dynamics, we train auto-encoders on dictionaries of simulated signal evolution to learn more compact, non-linear, latent representations. The proposed Latent Signal Model framework inserts the decoder portion of the auto-encoder into the forward model and directly reconstructs the latent representation. Latent Signal Models essentially serve as a proxy for fast and feasible differentiation through the Bloch-equations used to simulate signal. This work performs experiments in the context of T2-shuffling, gradient echo EPTI, and MPRAGE-shuffling. We compare how efficiently auto-encoders represent signal evolution in comparison to linear subspaces. Simulation and in-vivo experiments then evaluate if reducing degrees of freedom by inserting the decoder into the forward model improves reconstructions in comparison to subspace constraints. Results: An auto-encoder with one real latent variable represents FSE, EPTI, and MPRAGE signal evolution as well as linear subspaces characterized by four basis vectors. In simulated/in-vivo T2-shuffling and in-vivo EPTI experiments, the proposed framework achieves consistent quantitative NRMSE and qualitative improvement over linear approaches. From qualitative evaluation, the proposed approach yields images with reduced blurring and noise amplification in MPRAGE shuffling experiments. Conclusion: Directly solving for non-linear latent representations of signal evolution improves time-resolved MRI reconstructions through reduced degrees of freedom.}
+}
+
 @InProceedings{10.1007/978-3-030-87234-2_19,
 author="Xu, Junshen
 and Turk, Esra Abaci
@@ -330,23 +355,7 @@ selected={true},
   url="https://journals.lww.com/nuclearmedicinecomm/Abstract/2019/08000/Assessing_EGFR_gene_mutation_status_in_non_small.10.aspx"
 }
 
-@article{https://doi.org/10.48550/arxiv.2208.13003,
-  doi = {10.48550/ARXIV.2208.13003},
-  author = {Arefeen, Yamin and Xu, Junshen and Zhang, Molin and Dong, Zijing and Wang, Fuyixue and White, Jacob and Bilgic, Berkin and Adalsteinsson, Elfar},
-  keywords = {Signal Processing (eess.SP), Medical Physics (physics.med-ph), FOS: Electrical engineering, electronic engineering, information engineering, FOS: Electrical engineering, electronic engineering, information engineering, FOS: Physical sciences, FOS: Physical sciences},
-  title = {Latent Signal Models: Learning Compact Representations of Signal Evolution for Improved Time-Resolved, Multi-contrast MRI},
-  publisher = {arXiv},
-  year = {2022},
-  copyright = {arXiv.org perpetual, non-exclusive license},
-  journal={arXiv preprint arXiv:2208.13003},
-  arXiv = {2208.13003},
-  abbr="arXiv",
-  abstract = {Purpose: Training auto-encoders on simulated signal evolution and inserting the decoder into the forward model improves reconstructions through more compact, Bloch-equation-based representations of signal in comparison to linear subspaces. Methods: Building on model-based nonlinear and linear subspace techniques that enable reconstruction of signal dynamics, we train auto-encoders on dictionaries of simulated signal evolution to learn more compact, non-linear, latent representations. The proposed Latent Signal Model framework inserts the decoder portion of the auto-encoder into the forward model and directly reconstructs the latent representation. Latent Signal Models essentially serve as a proxy for fast and feasible differentiation through the Bloch-equations used to simulate signal. This work performs experiments in the context of T2-shuffling, gradient echo EPTI, and MPRAGE-shuffling. We compare how efficiently auto-encoders represent signal evolution in comparison to linear subspaces. Simulation and in-vivo experiments then evaluate if reducing degrees of freedom by inserting the decoder into the forward model improves reconstructions in comparison to subspace constraints. Results: An auto-encoder with one real latent variable represents FSE, EPTI, and MPRAGE signal evolution as well as linear subspaces characterized by four basis vectors. In simulated/in-vivo T2-shuffling and in-vivo EPTI experiments, the proposed framework achieves consistent quantitative NRMSE and qualitative improvement over linear approaches. From qualitative evaluation, the proposed approach yields images with reduced blurring and noise amplification in MPRAGE shuffling experiments. Conclusion: Directly solving for non-linear latent representations of signal evolution improves time-resolved MRI reconstructions through reduced degrees of freedom.}
-}
-
-
-
-
+# template
 
 @string{aps = {American Physical Society,}}
 
