@@ -6,5 +6,6 @@ description: an example of a blog post with giscus comments
 categories: sample-posts external-services
 giscus_comments: true
 published: false
+related_posts: false
 ---
 This post shows how to add GISCUS comments.
