@@ -1,4 +1,355 @@
-<!DOCTYPE html> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta name="google-site-verification" content="MARJu3erA7Z6jybcmR5fgSNRNtCNYMAYkk0jidGGr8A"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>CLIP: Contrastive Language-Image Pre-training | Junshen Xu</title> <meta name="author" content="Junshen Xu"> <meta name="description" content="Learning Transferable Visual Models From Natural Language Supervision"> <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website"> <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CRoboto+Slab:100,300,400,500,700%7CMaterial+Icons"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="/assets/img/favicon_v2.ico"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="https://daviddmc.github.io/blog/2021/CLIP/"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark"> <script src="/assets/js/theme.js"></script> <script src="/assets/js/dark_mode.js"></script> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script src="/assets/js/distillpub/template.v2.js"></script> <script src="/assets/js/distillpub/transforms.v2.js"></script> <script src="/assets/js/distillpub/overrides.js"></script> <style type="text/css">.fake-img p{font-family:monospace;color:white;text-align:left;margin:12px 0;text-align:center;font-size:16px}</style> <style type="text/css">.highlight pre:not(.language-text){background-color:#272822;color:#f8f8f2}.highlight .hll{background-color:#272822}.highlight .comment{color:#75715e}.highlight .err{color:#960050;background-color:#1e0010}.highlight .keyword{color:#66d9ef}.highlight .l{color:#ae81ff}.highlight .n{color:#f8f8f2}.highlight .operator{color:#f92672}.highlight .punctuation{color:#f8f8f2}.highlight .cm{color:#75715e}.highlight .cp{color:#75715e}.highlight .c1{color:#75715e}.highlight .cs{color:#75715e}.highlight .ge{font-style:italic}.highlight .gs{font-weight:bold}.highlight .kc{color:#66d9ef}.highlight .kd{color:#66d9ef}.highlight .kn{color:#f92672}.highlight .kp{color:#66d9ef}.highlight .kr{color:#66d9ef}.highlight .kt{color:#66d9ef}.highlight .ld{color:#e6db74}.highlight .number{color:#ae81ff}.highlight .string{color:#e6db74}.highlight .na{color:#a6e22e}.highlight .builtin{color:#f8f8f2}.highlight .class-name{color:#a6e22e}.highlight .no{color:#66d9ef}.highlight .decorator{color:#a6e22e}.highlight .ni{color:#f8f8f2}.highlight .ne{color:#a6e22e}.highlight .function{color:#a6e22e}.highlight .nl{color:#f8f8f2}.highlight .nn{color:#f8f8f2}.highlight .nx{color:#a6e22e}.highlight .py{color:#f8f8f2}.highlight .nt{color:#f92672}.highlight .nv{color:#f8f8f2}.highlight .ow{color:#f92672}.highlight .w{color:#f8f8f2}.highlight .mf{color:#ae81ff}.highlight .mh{color:#ae81ff}.highlight .mi{color:#ae81ff}.highlight .mo{color:#ae81ff}.highlight .sb{color:#e6db74}.highlight .sc{color:#e6db74}.highlight .sd{color:#e6db74}.highlight .s2{color:#e6db74}.highlight .se{color:#ae81ff}.highlight .sh{color:#e6db74}.highlight .si{color:#e6db74}.highlight .sx{color:#e6db74}.highlight .sr{color:#e6db74}.highlight .s1{color:#e6db74}.highlight .ss{color:#e6db74}.highlight .bp{color:#f8f8f2}.highlight .vc{color:#f8f8f2}.highlight .vg{color:#f8f8f2}.highlight .vi{color:#f8f8f2}.highlight .il{color:#ae81ff}.highlight .gu{color:#75715e}.highlight .gd{color:#f92672}.highlight .gi{color:#a6e22e}</style> <script>function createButton(t,o){const n=document.querySelector("body");backToTopButton=document.createElement("span"),backToTopButton.classList.add("softr-back-to-top-button"),backToTopButton.id="softr-back-to-top-button",o?o.appendChild(backToTopButton):n.appendChild(backToTopButton),backToTopButton.style.width=t.buttonWidth,backToTopButton.style.height=t.buttonHeight,backToTopButton.style.marginRight=t.buttonDToRight,backToTopButton.style.marginBottom=t.buttonDToBottom,backToTopButton.style.borderRadius=t.roundnessSize,backToTopButton.style.boxShadow=t.shadowSize,backToTopButton.style.color=t.selectedBackgroundColor,backToTopButton.style.backgroundColor=t.selectedBackgroundColor,backToTopButton.style.position=o?"absolute":"fixed",backToTopButton.style.outline="none",backToTopButton.style.bottom="0px",backToTopButton.style.right="0px",backToTopButton.style.cursor="pointer",backToTopButton.style.textAlign="center",backToTopButton.style.border="solid 2px currentColor",backToTopButton.innerHTML='<svg class="back-to-top-button-svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" > <g fill="none" fill-rule="evenodd"> <path d="M0 0H32V32H0z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> <path class="back-to-top-button-img" fill-rule="nonzero" d="M11.384 13.333h9.232c.638 0 .958.68.505 1.079l-4.613 4.07c-.28.246-.736.246-1.016 0l-4.613-4.07c-.453-.399-.133-1.079.505-1.079z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> </g> </svg>',backToTopButtonSvg=document.querySelector(".back-to-top-button-svg"),backToTopButtonSvg.style.verticalAlign="middle",backToTopButtonSvg.style.margin="auto",backToTopButtonSvg.style.justifyContent="center",backToTopButtonSvg.style.width=t.svgWidth,backToTopButtonSvg.style.height=t.svgHeight,backToTopButton.appendChild(backToTopButtonSvg),backToTopButtonImg=document.querySelector(".back-to-top-button-img"),backToTopButtonImg.style.fill=t.selectedIconColor,backToTopButtonSvg.appendChild(backToTopButtonImg),backToTopButtonImg.setAttribute("d",t.buttonD),backToTopButtonImg.setAttribute("transform",t.buttonT),o||(backToTopButton.style.display="none",window.onscroll=function(){document.body.scrollTop>20||document.documentElement.scrollTop>20?backToTopButton.style.display="block":backToTopButton.style.display="none"},backToTopButton.onclick=function(){document.body.scrollTop=0,document.documentElement.scrollTop=0})}configObj={buttonD:"M8 18.568L10.8 21.333 16 16.198 21.2 21.333 24 18.568 16 10.667z",buttonT:"translate(-1148 -172) translate(832 140) translate(32 32) translate(284)",shadowSize:"none",roundnessSize:"999px",buttonDToBottom:"64px",buttonDToRight:"32px",selectedBackgroundColor:"#c2c0bf",selectedIconColor:"#a31f34",buttonWidth:"40px",buttonHeight:"40px",svgWidth:"32px",svgHeight:"32px"},document.addEventListener("DOMContentLoaded",function(){createButton(configObj,null)});</script> </head> <body class="fixed-top-nav"> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Junshen </span>Xu</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about</a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">blog<span class="sr-only">(current)</span></a> </li> <li class="nav-item "> <a class="nav-link" href="/publications/">publications</a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">cv</a> </li> <li class="nav-item "> <a class="nav-link" href="/teaching/">teaching</a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="post distill"> <d-title> <h1>CLIP: Contrastive Language-Image Pre-training</h1> <p>Learning Transferable Visual Models From Natural Language Supervision</p> </d-title> <d-byline> <div class="byline grid"> <div> <h3>Published</h3> <p>February 26, 2021</p> </div> <div> <h3>Paper</h3> <p><a href="https://arxiv.org/pdf/2103.00020.pdf" rel="external nofollow noopener" target="_blank">arXiv</a></p> </div> <div> <h3>Code</h3> <p><a href="https://github.com/openai/CLIP" rel="external nofollow noopener" target="_blank">Github</a></p> </div> </div> </d-byline> <d-article> <d-contents> <nav class="l-text figcaption"> <h3>Contents</h3> <div><a href="#takeaways">Takeaways</a></div> <div><a href="#introduction">Introduction</a></div> <div><a href="#methods">Methods</a></div> <ul> <li><a href="#natural-language-supervision">Natural Language Supervision</a></li> <li><a href="#dataset">Dataset</a></li> <li><a href="#efficient-pre-training-method">Efficient Pre-Training Method</a></li> </ul> <div><a href="#experiments">Experiments</a></div> <ul> <li><a href="#zero-shot-transfer">Zero-Shot Transfer</a></li> <li><a href="#representation-learning">Representation Learning</a></li> <li><a href="#robustness-to-natural-distribution-shift">Robustness to Natural Distribution Shift</a></li> </ul> <div><a href="#limitations">Limitations</a></div> </nav> </d-contents> <h2 id="takeaways">Takeaways</h2> <ul> <li>CLIP consists of an image encoder (ResNet or ViT) and a text encoder (Transformer).</li> <li>CLIP is pre-trained to predict which caption goes with which image using <strong>contrastive learning</strong>.</li> <li>CLIP enables <strong>zero-shot transfer</strong> to other image classification task (using the class name as input text).</li> </ul> <h2 id="introduction">Introduction</h2> <p>The recent development of modern pre-training methods in NLP (e.g., T5<d-cite key="T5"></d-cite>, GPT-3<d-cite key="GPT-3"></d-cite>) suggests that the aggregate supervision within web-scale collections of text surpasses that of high-quality crowd-labeled NLP datasets.</p> <p>Using <strong>natural language supervision</strong> for image representation:</p> <ul> <li>Exciting as proofs of concept, but is still rare. This is likely because the performance on common benchmarks is much lower than SOTA.</li> <li>This line of work represents the middle ground between learning from a limited amount of supervised “gold labels” and learning from practically unlimited amounts of raw text.</li> <li>Compromise: use static softmax classifiers (fixed # of output classes) and lack a mechanism for dynamic outputs, which limits their “zero-shot” capabilities.</li> </ul> <p>In this work, the authors</p> <ul> <li>create a new dataset of <strong>400 million (image, text) pairs</strong>;</li> <li>demonstrate that the simple pre-training task of predicting which caption goes with which image is an efficient and scalable way to learn SOTA image representations from scratch;</li> <li>transfer the model to downstream tasks in a <strong>zero-shot</strong> manner.</li> </ul> <h2 id="methods">Methods</h2> <div class="l-page" style="text-align:center;"> <img src="https://raw.githubusercontent.com/openai/CLIP/main/CLIP.png" width="100%" style="margin-bottom: 12px; background-color: white;"> <p>Summary of CLIP.</p> </div> <h3 id="natural-language-supervision">Natural Language Supervision</h3> <p>At the core of CLIP is the idea of learning perception from supervision contained in natural language.</p> <p>Learning from natural language has several potential strengths over other training methods.</p> <ul> <li>Easier to scale natural language supervision compared to standard crowd-sourced labeling for image classification</li> <li>Learning from natural language also has an important advantage over most unsupervised or self-supervised learning approaches in that it doesn’t “just” learn a representation but also connects that representation to language which enables flexible zero-shot transfer.</li> </ul> <h3 id="dataset">Dataset</h3> <p>Create a new dataset: WebImageText (WIT)</p> <ul> <li> <strong>400M image-text pairs</strong>,</li> <li>Collect from publicly available sources on the Internet,</li> <li>Search for (image, text) pairs whose text includes one of a set of 500,000 queries (frequent words in Wikipedia),</li> <li>Class balance the results by including up to 20,000 (image, text),</li> <li>The text data has a similar word count as the WebText dataset used to train GPT-2<d-cite key="GPT-2"></d-cite>.</li> </ul> <h3 id="efficient-pre-training-method">Efficient Pre-Training Method</h3> <h4 id="initial-approach">Initial Approach</h4> <p>Jointly train an image CNN and text transformer from scratch to predict the caption of an image.</p> <h4 id="problem">Problem</h4> <p>This approach learns to recognize ImageNet classes three times slower than a much simpler baseline that predicts a bag-of-words encoding of the same text.</p> <h4 id="reason">Reason</h4> <p>The models try to predict the <em>exact words</em> of the text accompanying each image. This is a <em>difficult task</em> due to the wide variety of descriptions, comments, and related text that co-occur with images.</p> <h4 id="solution-contrastive-representation-learning">Solution: Contrastive Representation Learning</h4> <p>Given a batch of \(N\) (image, text) pairs, CLIP is trained to predict which of the \(N\times N\) possible (image, text) pairings across a batch actually occurred.</p> <p>To do this, CLIP learns a multi-modal embedding space by jointly training an image encoder and text encoder to maximize the cosine similarity of the image and text embeddings of the \(N\) real pairs in the batch while minimizing the cosine similarity of the embeddings of the \(N^2 - N\) incorrect pairings (see the pseudocode below).</p> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1"># image_encoder - ResNet or Vision Transformer
+<!DOCTYPE html>
+<!-- _layouts/paper-note.html --><html>
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+    <!-- Website verification -->
+    <meta name="google-site-verification" content="MARJu3erA7Z6jybcmR5fgSNRNtCNYMAYkk0jidGGr8A">
+<!-- Avoid warning on Google Chrome
+        Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'interest-cohort'.
+        see https://stackoverflow.com/a/75119417
+    -->
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+
+    <!-- Standard metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>CLIP: Contrastive Language-Image Pre-training | Junshen  Xu</title>
+    <meta name="author" content="Junshen  Xu">
+    <meta name="description" content="Learning Transferable Visual Models From Natural Language Supervision">
+    <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
+
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CRoboto+Slab:100,300,400,500,700%7CMaterial+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="/assets/img/favicon_v2.ico">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://daviddmc.github.io/blog/2021/CLIP/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    <!-- Distill js -->
+    <script src="/assets/js/distillpub/template.v2.js"></script>
+    <script src="/assets/js/distillpub/transforms.v2.js"></script>
+    <script src="/assets/js/distillpub/overrides.js"></script>
+    
+    <!-- Page/Post style -->
+    <style type="text/css">
+      .fake-img p {
+  font-family: monospace;
+  color: white;
+  text-align: left;
+  margin: 12px 0;
+  text-align: center;
+  font-size: 16px;
+}
+
+    </style>
+    <style type="text/css">
+      .highlight pre:not(.language-text) { background-color: #272822; color: #f8f8f2;}
+      .highlight .hll { background-color: #272822; }
+      .highlight .comment { color: #75715e } /* Comment c */
+      .highlight .err { color: #960050; background-color: #1e0010 } /* Error */
+      .highlight .keyword { color: #66d9ef } /* Keyword k*/
+      .highlight .l { color: #ae81ff } /* Literal */
+      .highlight .n { color: #f8f8f2 } /* Name */
+      .highlight .operator { color: #f92672 } /* Operator o*/
+      .highlight .punctuation { color: #f8f8f2 } /* Punctuation p*/
+      .highlight .cm { color: #75715e } /* Comment.Multiline */
+      .highlight .cp { color: #75715e } /* Comment.Preproc */
+      .highlight .c1 { color: #75715e } /* Comment.Single */
+      .highlight .cs { color: #75715e } /* Comment.Special */
+      .highlight .ge { font-style: italic } /* Generic.Emph */
+      .highlight .gs { font-weight: bold } /* Generic.Strong */
+      .highlight .kc { color: #66d9ef } /* Keyword.Constant */
+      .highlight .kd { color: #66d9ef } /* Keyword.Declaration */
+      .highlight .kn { color: #f92672 } /* Keyword.Namespace */
+      .highlight .kp { color: #66d9ef } /* Keyword.Pseudo */
+      .highlight .kr { color: #66d9ef } /* Keyword.Reserved */
+      .highlight .kt { color: #66d9ef } /* Keyword.Type */
+      .highlight .ld { color: #e6db74 } /* Literal.Date */
+      .highlight .number { color: #ae81ff } /* Literal.Number m*/
+      .highlight .string { color: #e6db74 } /* Literal.String s*/
+      .highlight .na { color: #a6e22e } /* Name.Attribute */
+      .highlight .builtin { color: #f8f8f2 } /* Name.Builtin nb*/
+      .highlight .class-name { color: #a6e22e } /* Name.Class nc*/
+      .highlight .no { color: #66d9ef } /* Name.Constant */
+      .highlight .decorator { color: #a6e22e } /* Name.Decorator nd*/
+      .highlight .ni { color: #f8f8f2 } /* Name.Entity */
+      .highlight .ne { color: #a6e22e } /* Name.Exception */
+      .highlight .function { color: #a6e22e } /* Name.Function nf*/
+      .highlight .nl { color: #f8f8f2 } /* Name.Label */
+      .highlight .nn { color: #f8f8f2 } /* Name.Namespace */
+      .highlight .nx { color: #a6e22e } /* Name.Other */
+      .highlight .py { color: #f8f8f2 } /* Name.Property */
+      .highlight .nt { color: #f92672 } /* Name.Tag */
+      .highlight .nv { color: #f8f8f2 } /* Name.Variable */
+      .highlight .ow { color: #f92672 } /* Operator.Word */
+      .highlight .w { color: #f8f8f2 } /* Text.Whitespace */
+      .highlight .mf { color: #ae81ff } /* Literal.Number.Float */
+      .highlight .mh { color: #ae81ff } /* Literal.Number.Hex */
+      .highlight .mi { color: #ae81ff } /* Literal.Number.Integer */
+      .highlight .mo { color: #ae81ff } /* Literal.Number.Oct */
+      .highlight .sb { color: #e6db74 } /* Literal.String.Backtick */
+      .highlight .sc { color: #e6db74 } /* Literal.String.Char */
+      .highlight .sd { color: #e6db74 } /* Literal.String.Doc */
+      .highlight .s2 { color: #e6db74 } /* Literal.String.Double */
+      .highlight .se { color: #ae81ff } /* Literal.String.Escape */
+      .highlight .sh { color: #e6db74 } /* Literal.String.Heredoc */
+      .highlight .si { color: #e6db74 } /* Literal.String.Interpol */
+      .highlight .sx { color: #e6db74 } /* Literal.String.Other */
+      .highlight .sr { color: #e6db74 } /* Literal.String.Regex */
+      .highlight .s1 { color: #e6db74 } /* Literal.String.Single */
+      .highlight .ss { color: #e6db74 } /* Literal.String.Symbol */
+      .highlight .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+      .highlight .vc { color: #f8f8f2 } /* Name.Variable.Class */
+      .highlight .vg { color: #f8f8f2 } /* Name.Variable.Global */
+      .highlight .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+      .highlight .il { color: #ae81ff } /* Literal.Number.Integer.Long */
+      .highlight .gh { } /* Generic Heading & Diff Header */
+      .highlight .gu { color: #75715e; } /* Generic.Subheading & Diff Unified/Comment? */
+      .highlight .gd { color: #f92672; } /* Generic.Deleted & Diff Deleted */
+      .highlight .gi { color: #a6e22e; } /* Generic.Inserted & Diff Inserted */
+    </style>
+    <script> configObj = { "buttonD": "M8 18.568L10.8 21.333 16 16.198 21.2 21.333 24 18.568 16 10.667z", "buttonT": "translate(-1148 -172) translate(832 140) translate(32 32) translate(284)", "shadowSize": "none", "roundnessSize": "999px", "buttonDToBottom": "64px", "buttonDToRight": "32px", "selectedBackgroundColor": "#c2c0bf", "selectedIconColor": "#a31f34", "buttonWidth": "40px", "buttonHeight": "40px", "svgWidth": "32px", "svgHeight": "32px" }; function createButton(obj, pageSimulator) { const body = document.querySelector("body"); backToTopButton = document.createElement("span"); backToTopButton.classList.add("softr-back-to-top-button"); backToTopButton.id = "softr-back-to-top-button"; pageSimulator ? pageSimulator.appendChild(backToTopButton) : body.appendChild(backToTopButton); backToTopButton.style.width = obj.buttonWidth; backToTopButton.style.height = obj.buttonHeight; backToTopButton.style.marginRight = obj.buttonDToRight; backToTopButton.style.marginBottom = obj.buttonDToBottom; backToTopButton.style.borderRadius = obj.roundnessSize; backToTopButton.style.boxShadow = obj.shadowSize; backToTopButton.style.color = obj.selectedBackgroundColor; backToTopButton.style.backgroundColor = obj.selectedBackgroundColor; pageSimulator ? backToTopButton.style.position = "absolute" : backToTopButton.style.position = "fixed"; backToTopButton.style.outline = "none"; backToTopButton.style.bottom = "0px"; backToTopButton.style.right = "0px"; backToTopButton.style.cursor = "pointer"; backToTopButton.style.textAlign = "center"; backToTopButton.style.border = "solid 2px currentColor"; backToTopButton.innerHTML = '<svg class="back-to-top-button-svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" > <g fill="none" fill-rule="evenodd"> <path d="M0 0H32V32H0z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> <path class="back-to-top-button-img" fill-rule="nonzero" d="M11.384 13.333h9.232c.638 0 .958.68.505 1.079l-4.613 4.07c-.28.246-.736.246-1.016 0l-4.613-4.07c-.453-.399-.133-1.079.505-1.079z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> </g> </svg>'; backToTopButtonSvg = document.querySelector(".back-to-top-button-svg"); backToTopButtonSvg.style.verticalAlign = "middle"; backToTopButtonSvg.style.margin = "auto"; backToTopButtonSvg.style.justifyContent = "center"; backToTopButtonSvg.style.width = obj.svgWidth; backToTopButtonSvg.style.height = obj.svgHeight; backToTopButton.appendChild(backToTopButtonSvg); backToTopButtonImg = document.querySelector(".back-to-top-button-img"); backToTopButtonImg.style.fill = obj.selectedIconColor; backToTopButtonSvg.appendChild(backToTopButtonImg); backToTopButtonImg.setAttribute("d", obj.buttonD); backToTopButtonImg.setAttribute("transform", obj.buttonT); if (!pageSimulator) { backToTopButton.style.display = "none"; window.onscroll = function () { if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) { backToTopButton.style.display = "block"; } else { backToTopButton.style.display = "none"; } }; backToTopButton.onclick = function () { document.body.scrollTop = 0; document.documentElement.scrollTop = 0; }; } }; document.addEventListener("DOMContentLoaded", function () { createButton(configObj, null); });</script>
+  </head>
+  
+  <body class="fixed-top-nav">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Junshen </span>Xu</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">about</a>
+              </li>
+              
+              <!-- Blog -->
+              <li class="nav-item active">
+                <a class="nav-link" href="/blog/">blog<span class="sr-only">(current)</span></a>
+              </li>
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/cv/">cv</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/teaching/">teaching</a>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="post distill">
+
+      <d-title>
+        <h1>CLIP: Contrastive Language-Image Pre-training</h1>
+        <p>Learning Transferable Visual Models From Natural Language Supervision</p>
+      </d-title>
+
+      <d-byline>
+          <div class="byline grid">
+            <div>
+              <h3>Published</h3>
+                <p>February 26, 2021</p> 
+            </div>
+            
+            <div>
+              <h3>Paper</h3>
+                <p><a href="https://arxiv.org/pdf/2103.00020.pdf" rel="external nofollow noopener" target="_blank">arXiv</a></p> 
+            </div>
+            
+            
+            <div>
+              <h3>Code</h3>
+                <p><a href="https://github.com/openai/CLIP" rel="external nofollow noopener" target="_blank">Github</a></p> 
+            </div>
+            
+          </div>
+      </d-byline>
+
+      <d-article>
+        <d-contents>
+          <nav class="l-text figcaption">
+          <h3>Contents</h3>
+            <div><a href="#takeaways">Takeaways</a></div>
+            <div><a href="#introduction">Introduction</a></div>
+            <div><a href="#methods">Methods</a></div>
+            <ul>
+              <li><a href="#natural-language-supervision">Natural Language Supervision</a></li>
+              <li><a href="#dataset">Dataset</a></li>
+              <li><a href="#efficient-pre-training-method">Efficient Pre-Training Method</a></li>
+              
+            </ul>
+<div><a href="#experiments">Experiments</a></div>
+            <ul>
+              <li><a href="#zero-shot-transfer">Zero-Shot Transfer</a></li>
+              <li><a href="#representation-learning">Representation Learning</a></li>
+              <li><a href="#robustness-to-natural-distribution-shift">Robustness to Natural Distribution Shift</a></li>
+              
+            </ul>
+<div><a href="#limitations">Limitations</a></div>
+            
+          </nav>
+        </d-contents>
+
+        <h2 id="takeaways">Takeaways</h2>
+
+<ul>
+  <li>CLIP consists of an image encoder (ResNet or ViT) and a text encoder (Transformer).</li>
+  <li>CLIP is pre-trained to predict which caption goes with which image using <strong>contrastive learning</strong>.</li>
+  <li>CLIP enables <strong>zero-shot transfer</strong> to other image classification task (using the class name as input text).</li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The recent development of modern pre-training methods in NLP (e.g., T5<d-cite key="T5"></d-cite>, GPT-3<d-cite key="GPT-3"></d-cite>) suggests that the aggregate supervision within web-scale collections of text surpasses that of high-quality crowd-labeled NLP datasets.</p>
+
+<p>Using <strong>natural language supervision</strong> for image representation:</p>
+
+<ul>
+  <li>Exciting as proofs of concept, but is still rare. This is likely because the performance on common benchmarks is much lower than SOTA.</li>
+  <li>This line of work represents the middle ground between learning from a limited amount of supervised “gold labels” and learning from practically unlimited amounts of raw text.</li>
+  <li>Compromise: use static softmax classifiers (fixed # of output classes) and lack a mechanism for dynamic outputs, which limits their “zero-shot” capabilities.</li>
+</ul>
+
+<p>In this work, the authors</p>
+
+<ul>
+  <li>create a new dataset of <strong>400 million (image, text) pairs</strong>;</li>
+  <li>demonstrate that the simple pre-training task of predicting which caption goes with which image is an efficient and scalable way to learn SOTA image representations from scratch;</li>
+  <li>transfer the model to downstream tasks in a <strong>zero-shot</strong> manner.</li>
+</ul>
+
+<h2 id="methods">Methods</h2>
+
+<div class="l-page" style="text-align:center;">
+  <img src="https://raw.githubusercontent.com/openai/CLIP/main/CLIP.png" width="100%" style="margin-bottom: 12px; background-color: white;">
+  <p>Summary of CLIP.</p>
+</div>
+
+<h3 id="natural-language-supervision">Natural Language Supervision</h3>
+
+<p>At the core of CLIP is the idea of learning perception from supervision contained in natural language.</p>
+
+<p>Learning from natural language has several potential strengths over other training methods.</p>
+
+<ul>
+  <li>Easier to scale natural language supervision compared to standard crowd-sourced labeling for image classification</li>
+  <li>Learning from natural language also has an important advantage over most unsupervised or self-supervised learning approaches in that it doesn’t “just” learn a representation but also connects that representation to language which enables flexible zero-shot transfer.</li>
+</ul>
+
+<h3 id="dataset">Dataset</h3>
+
+<p>Create a new dataset: WebImageText (WIT)</p>
+
+<ul>
+  <li>
+<strong>400M image-text pairs</strong>,</li>
+  <li>Collect from publicly available sources on the Internet,</li>
+  <li>Search for (image, text) pairs whose text includes one of a set of 500,000 queries (frequent words in Wikipedia),</li>
+  <li>Class balance the results by including up to 20,000 (image, text),</li>
+  <li>The text data has a similar word count as the WebText dataset used to train GPT-2<d-cite key="GPT-2"></d-cite>.</li>
+</ul>
+
+<h3 id="efficient-pre-training-method">Efficient Pre-Training Method</h3>
+
+<h4 id="initial-approach">Initial Approach</h4>
+
+<p>Jointly train an image CNN and text transformer from scratch to predict the caption of an image.</p>
+
+<h4 id="problem">Problem</h4>
+
+<p>This approach learns to recognize ImageNet classes three times slower than a much simpler baseline that predicts a bag-of-words encoding of the same text.</p>
+
+<h4 id="reason">Reason</h4>
+
+<p>The models try to predict the <em>exact words</em> of the text accompanying each image. This is a <em>difficult task</em> due to the wide variety of descriptions, comments, and related text that co-occur with images.</p>
+
+<h4 id="solution-contrastive-representation-learning">Solution: Contrastive Representation Learning</h4>
+
+<p>Given a batch of \(N\) (image, text) pairs, CLIP is trained to predict which of the \(N\times N\) possible (image, text) pairings across a batch actually occurred.</p>
+
+<p>To do this, CLIP learns a multi-modal embedding space by jointly training an image encoder and text encoder to maximize the cosine similarity of the image and text embeddings of the \(N\) real pairs in the batch while minimizing the cosine similarity of the embeddings of the \(N^2 - N\) incorrect pairings (see the pseudocode below).</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1"># image_encoder - ResNet or Vision Transformer
 </span>  <span class="c1"># text_encoder - CBOW or Text Transformer
 </span>  <span class="c1"># I[n, h, w, c] - minibatch of aligned images
 </span>  <span class="c1"># T[n, l] - minibatch of aligned texts
@@ -18,4 +369,210 @@
   <span class="n">loss_i</span> <span class="o">=</span> <span class="nf">cross_entropy_loss</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
   <span class="n">loss_t</span> <span class="o">=</span> <span class="nf">cross_entropy_loss</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
   <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span><span class="n">loss_i</span> <span class="o">+</span> <span class="n">loss_t</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
-</code></pre></div></div> <p>CLIP was trained from scratch without initializing the image encoder with ImageNet weights or the text encoder with pre-trained weights.</p> <p>Only used linear projection to map image/text representation to the multi-model embedding space (instead of non-linear projection)</p> <h4 id="model">Model</h4> <ul> <li> <strong>Image encoder:</strong> ResNet / ViT</li> <li> <strong>Text encoder:</strong> Transformer<d-cite key="Transformer"></d-cite> </li> </ul> <h2 id="experiments">Experiments</h2> <h3 id="zero-shot-transfer">Zero-Shot Transfer</h3> <h4 id="zero-shot-classification">Zero-Shot Classification</h4> <p>Using class name as input text and predict the most probable pair (maximizing cosine similarity)</p> <p>Results:</p> <ul> <li>CLIP outperforms Visual N-Grams.</li> <li>The best <strong>zero-shot</strong> CLIP model achieves an accuracy of 76.2% on ImageNet, matching the performance of the original <strong>supervised</strong> ResNet-50.</li> </ul> <h4 id="prompt-engineering">Prompt Engineering</h4> <p>The input texts during training are sentences while the label of an image is just a word. To help bridge this distribution gap, the authors use the prompt template <code class="language-plaintext highlighter-rouge">"A photo of a {label}"</code>. Also, zero-shot performance can be significantly improved by customizing the prompt text for each task.</p> <h3 id="representation-learning">Representation Learning</h3> <p>Methods to evaluate the quality of learned representation:</p> <ol> <li>Fitting a linear classifier on the representation extracted from the model and measuring its performance on various datasets.</li> <li>Fine-tunning end-to-end</li> </ol> <p>The first method is used in CLIP since fine-tuning end-to-end would change the representation and potentially mask some failures.</p> <h3 id="robustness-to-natural-distribution-shift">Robustness to Natural Distribution Shift</h3> <p>DL models are exceedingly adept at finding correlations and patterns which hold across their training dataset and thus improve in-distribution performance. However many of these correlations and patterns are actually spurious and do not hold for other distributions and result in large drops in performance on other datasets.</p> <ul> <li> <p><em>Effective robustness</em> measures improvements in accuracy under distribution shift above what is predicted by the documented relationship between in-distribution and out-of-distribution accuracy.</p> </li> <li> <p><em>Relative robustness</em> captures any improvement in out-of-distribution accuracy.</p> </li> </ul> <h4 id="zero-shot">Zero-Shot</h4> <p>Intuitively, a zero-shot model should not be able to exploit spurious correlations or patterns that hold only on a specific distribution, since it is not trained on that distribution.</p> <p>Results show that zero-shot models can be much more robust, however, they do not necessarily mean that supervised learning on ImageNet causes a robustness gap. Other details of CLIP, such as its large and diverse pre-training dataset or use of natural language supervision could also result in much more robust models regardless of whether they are zero-shot or fine-tuned.</p> <h4 id="fine-tune-on-imagenet">Fine-Tune on ImageNet</h4> <p>Although adapting CLIP to the ImageNet distribution increases its ImageNet accuracy by 9.2% to 85.4% overall, and ties the accuracy of the 2018 SOTA, <em>average accuracy under distribution shift slightly decreases</em>.</p> <h4 id="flexible-classes">Flexible Classes</h4> <p>The target classes across the transfer datasets are not always perfectly aligned with those of ImageNet. With CLIP we can instead generate a custom zero-shot classifier for each dataset directly based on its class names.</p> <p>Results: This improves average effective robustness by 5% but is concentrated in large improvements on only a few datasets.</p> <h4 id="few-shot">Few-Shot</h4> <ul> <li>Few-shot CLIP also increases effective robustness compared to existing ImageNet models.</li> <li>But few-shot CLIP is less robust than zero-shot CLIP.</li> <li>Minimizing the amount of ImageNet training data used for adaption increases effective robustness at the cost of decreasing relative robustness.</li> </ul> <h2 id="limitations">Limitations</h2> <ul> <li>The zero-shot CLIP is on average competitive with the simple <em>supervised</em> baseline of a <em>linear classifier</em> on top of ResNet-50 features, and is well below the overall SOTA. Significant work is still needed to improve the task-learning and transfer capabilities of CLIP.</li> <li>The performance of CLIP is poor on fine-grained classification (e.g., differentiating models of cars), abstract and systematic tasks (e.g., number counting), and novel tasks which are unlikely to be included in the pre-training dataset.</li> <li>The zero-shot CLIP still generalizes poorly to data that is truly out-of-distribution for it. This suggests CLIP does little to address the underlying problem of brittle generalization of deep learning models. Instead, CLIP tries to circumvent the problem and hopes that by training on such a large and varied dataset that all data will be effectively in-distribution.</li> <li>CLIP is still limited to choosing from only those concepts in a given zero-shot classifier. This is a significant restriction compared to a truly flexible approach like image captioning which could generate novel outputs.</li> <li>CLIP also does not address the poor data efficiency of deep learning.</li> <li>Despite our focus on zero-shot transfer, we repeatedly queried performance on full validation sets to guide the development of CLIP.</li> <li>Many complex tasks and visual concepts can be difficult to specify just through text.</li> <li>CLIP does not optimize for few-shot performance directly, resulting in a counter-intuitive drop in performance when transitioning from a zero-shot to a few-shot setting. This is different from the human performance which shows a large increase from a zero to a one-shot setting.</li> </ul> </d-article> <d-appendix> <d-footnote-list></d-footnote-list> <d-citation-list></d-citation-list> </d-appendix> <d-bibliography src="/assets/bibliography/paper-notes.bib"></d-bibliography> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2023 Junshen Xu. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. Last updated: May 06, 2023. </div> </footer> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script async src="https://www.googletagmanager.com/gtag/js?id=G-NYJ88YK0VS"></script> <script>function gtag(){window.dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-NYJ88YK0VS");</script> <script type="text/javascript">function progressBarSetup(){"max"in document.createElement("progress")?(initializeProgressElement(),$(document).on("scroll",function(){progressBar.attr({value:getCurrentScrollPosition()})}),$(window).on("resize",initializeProgressElement)):(resizeProgressBar(),$(document).on("scroll",resizeProgressBar),$(window).on("resize",resizeProgressBar))}function getCurrentScrollPosition(){return $(window).scrollTop()}function initializeProgressElement(){let e=$("#navbar").outerHeight(!0);$("body").css({"padding-top":e}),$("progress-container").css({"padding-top":e}),progressBar.css({top:e}),progressBar.attr({max:getDistanceToScroll(),value:getCurrentScrollPosition()})}function getDistanceToScroll(){return $(document).height()-$(window).height()}function resizeProgressBar(){progressBar.css({width:getWidthPercentage()+"%"})}function getWidthPercentage(){return getCurrentScrollPosition()/getDistanceToScroll()*100}const progressBar=$("#progress");window.onload=function(){setTimeout(progressBarSetup,50)};</script> </body> </html>
+</code></pre></div></div>
+
+<p>CLIP was trained from scratch without initializing the image encoder with ImageNet weights or the text encoder with pre-trained weights.</p>
+
+<p>Only used linear projection to map image/text representation to the multi-model embedding space (instead of non-linear projection)</p>
+
+<h4 id="model">Model</h4>
+
+<ul>
+  <li>
+<strong>Image encoder:</strong> ResNet / ViT</li>
+  <li>
+<strong>Text encoder:</strong> Transformer<d-cite key="Transformer"></d-cite>
+</li>
+</ul>
+
+<h2 id="experiments">Experiments</h2>
+
+<h3 id="zero-shot-transfer">Zero-Shot Transfer</h3>
+
+<h4 id="zero-shot-classification">Zero-Shot Classification</h4>
+
+<p>Using class name as input text and predict the most probable pair (maximizing cosine similarity)</p>
+
+<p>Results:</p>
+
+<ul>
+  <li>CLIP outperforms Visual N-Grams.</li>
+  <li>The best <strong>zero-shot</strong> CLIP model achieves an accuracy of 76.2% on ImageNet, matching the performance of the original <strong>supervised</strong> ResNet-50.</li>
+</ul>
+
+<h4 id="prompt-engineering">Prompt Engineering</h4>
+
+<p>The input texts during training are sentences while the label of an image is just a word. To help bridge this distribution gap, the authors use the prompt template <code class="language-plaintext highlighter-rouge">"A photo of a {label}"</code>. Also, zero-shot performance can be significantly improved by customizing the prompt text for each task.</p>
+
+<h3 id="representation-learning">Representation Learning</h3>
+
+<p>Methods to evaluate the quality of learned representation:</p>
+
+<ol>
+  <li>Fitting a linear classifier on the representation extracted from the model and measuring its performance on various datasets.</li>
+  <li>Fine-tunning end-to-end</li>
+</ol>
+
+<p>The first method is used in CLIP since fine-tuning end-to-end would change the representation and potentially mask some failures.</p>
+
+<h3 id="robustness-to-natural-distribution-shift">Robustness to Natural Distribution Shift</h3>
+
+<p>DL models are exceedingly adept at finding correlations and patterns which hold across their training dataset and thus improve in-distribution performance. However many of these correlations and patterns are actually spurious and do not hold for other distributions and result in large drops in performance on other datasets.</p>
+
+<ul>
+  <li>
+    <p><em>Effective robustness</em> measures improvements in accuracy under distribution shift above what is predicted by the documented relationship between in-distribution and out-of-distribution accuracy.</p>
+  </li>
+  <li>
+    <p><em>Relative robustness</em> captures any improvement in out-of-distribution accuracy.</p>
+  </li>
+</ul>
+
+<h4 id="zero-shot">Zero-Shot</h4>
+
+<p>Intuitively, a zero-shot model should not be able to exploit spurious correlations or patterns that hold only on a specific distribution, since it is not trained on that distribution.</p>
+
+<p>Results show that zero-shot models can be much more robust, however, they do not necessarily mean that supervised learning on ImageNet causes a robustness gap. Other details of CLIP, such as its large and diverse pre-training dataset or use of natural language supervision could also result in much more robust models regardless of whether they are zero-shot or fine-tuned.</p>
+
+<h4 id="fine-tune-on-imagenet">Fine-Tune on ImageNet</h4>
+
+<p>Although adapting CLIP to the ImageNet distribution increases its ImageNet accuracy by 9.2% to 85.4% overall, and ties the accuracy of the 2018 SOTA, <em>average accuracy under distribution shift slightly decreases</em>.</p>
+
+<h4 id="flexible-classes">Flexible Classes</h4>
+
+<p>The target classes across the transfer datasets are not always perfectly aligned with those of ImageNet. With CLIP we can instead generate a custom zero-shot classifier for each dataset directly based on its class names.</p>
+
+<p>Results: This improves average effective robustness by 5% but is concentrated in large improvements on only a few datasets.</p>
+
+<h4 id="few-shot">Few-Shot</h4>
+
+<ul>
+  <li>Few-shot CLIP also increases effective robustness compared to existing ImageNet models.</li>
+  <li>But few-shot CLIP is less robust than zero-shot CLIP.</li>
+  <li>Minimizing the amount of ImageNet training data used for adaption increases effective robustness at the cost of decreasing relative robustness.</li>
+</ul>
+
+<h2 id="limitations">Limitations</h2>
+
+<ul>
+  <li>The zero-shot CLIP is on average competitive with the simple <em>supervised</em> baseline of a <em>linear classifier</em> on top of ResNet-50 features, and is well below the overall SOTA. Significant work is still needed to improve the task-learning and transfer capabilities of CLIP.</li>
+  <li>The performance of CLIP is poor on fine-grained classification (e.g., differentiating models of cars), abstract and systematic tasks (e.g., number counting), and novel tasks which are unlikely to be included in the pre-training dataset.</li>
+  <li>The zero-shot CLIP still generalizes poorly to data that is truly out-of-distribution for it. This suggests CLIP does little to address the underlying problem of brittle generalization of deep learning models. Instead, CLIP tries to circumvent the problem and hopes that by training on such a large and varied dataset that all data will be effectively in-distribution.</li>
+  <li>CLIP is still limited to choosing from only those concepts in a given zero-shot classifier. This is a significant restriction compared to a truly flexible approach like image captioning which could generate novel outputs.</li>
+  <li>CLIP also does not address the poor data efficiency of deep learning.</li>
+  <li>Despite our focus on zero-shot transfer, we repeatedly queried performance on full validation sets to guide the development of CLIP.</li>
+  <li>Many complex tasks and visual concepts can be difficult to specify just through text.</li>
+  <li>CLIP does not optimize for few-shot performance directly, resulting in a counter-intuitive drop in performance when transitioning from a zero-shot to a few-shot setting. This is different from the human performance which shows a large increase from a zero to a one-shot setting.</li>
+</ul>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+      <d-bibliography src="/assets/bibliography/paper-notes.bib"></d-bibliography>
+    </div>
+
+    <!-- Footer -->    
+    <footer class="fixed-bottom">
+      <div class="container mt-0">
+        © Copyright 2023 Junshen  Xu. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>.
+Last updated: May 06, 2023.
+      </div>
+    </footer>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NYJ88YK0VS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ window.dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-NYJ88YK0VS');
+  </script>
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+  </body>
+</html>

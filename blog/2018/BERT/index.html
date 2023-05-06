@@ -1,1 +1,593 @@
-<!DOCTYPE html> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta name="google-site-verification" content="MARJu3erA7Z6jybcmR5fgSNRNtCNYMAYkk0jidGGr8A"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>BERT: Bidirectional Encoder Representations from Transformers | Junshen Xu</title> <meta name="author" content="Junshen Xu"> <meta name="description" content="Pre-training of Deep Bidirectional Transformers for Language Understanding"> <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website"> <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CRoboto+Slab:100,300,400,500,700%7CMaterial+Icons"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="/assets/img/favicon_v2.ico"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="https://daviddmc.github.io/blog/2018/BERT/"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark"> <script src="/assets/js/theme.js"></script> <script src="/assets/js/dark_mode.js"></script> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script src="/assets/js/distillpub/template.v2.js"></script> <script src="/assets/js/distillpub/transforms.v2.js"></script> <script src="/assets/js/distillpub/overrides.js"></script> <style type="text/css">.highlight pre:not(.language-text){background-color:#272822;color:#f8f8f2}.highlight .hll{background-color:#272822}.highlight .comment{color:#75715e}.highlight .err{color:#960050;background-color:#1e0010}.highlight .keyword{color:#66d9ef}.highlight .l{color:#ae81ff}.highlight .n{color:#f8f8f2}.highlight .operator{color:#f92672}.highlight .punctuation{color:#f8f8f2}.highlight .cm{color:#75715e}.highlight .cp{color:#75715e}.highlight .c1{color:#75715e}.highlight .cs{color:#75715e}.highlight .ge{font-style:italic}.highlight .gs{font-weight:bold}.highlight .kc{color:#66d9ef}.highlight .kd{color:#66d9ef}.highlight .kn{color:#f92672}.highlight .kp{color:#66d9ef}.highlight .kr{color:#66d9ef}.highlight .kt{color:#66d9ef}.highlight .ld{color:#e6db74}.highlight .number{color:#ae81ff}.highlight .string{color:#e6db74}.highlight .na{color:#a6e22e}.highlight .builtin{color:#f8f8f2}.highlight .class-name{color:#a6e22e}.highlight .no{color:#66d9ef}.highlight .decorator{color:#a6e22e}.highlight .ni{color:#f8f8f2}.highlight .ne{color:#a6e22e}.highlight .function{color:#a6e22e}.highlight .nl{color:#f8f8f2}.highlight .nn{color:#f8f8f2}.highlight .nx{color:#a6e22e}.highlight .py{color:#f8f8f2}.highlight .nt{color:#f92672}.highlight .nv{color:#f8f8f2}.highlight .ow{color:#f92672}.highlight .w{color:#f8f8f2}.highlight .mf{color:#ae81ff}.highlight .mh{color:#ae81ff}.highlight .mi{color:#ae81ff}.highlight .mo{color:#ae81ff}.highlight .sb{color:#e6db74}.highlight .sc{color:#e6db74}.highlight .sd{color:#e6db74}.highlight .s2{color:#e6db74}.highlight .se{color:#ae81ff}.highlight .sh{color:#e6db74}.highlight .si{color:#e6db74}.highlight .sx{color:#e6db74}.highlight .sr{color:#e6db74}.highlight .s1{color:#e6db74}.highlight .ss{color:#e6db74}.highlight .bp{color:#f8f8f2}.highlight .vc{color:#f8f8f2}.highlight .vg{color:#f8f8f2}.highlight .vi{color:#f8f8f2}.highlight .il{color:#ae81ff}.highlight .gu{color:#75715e}.highlight .gd{color:#f92672}.highlight .gi{color:#a6e22e}</style> <script>function createButton(t,o){const n=document.querySelector("body");backToTopButton=document.createElement("span"),backToTopButton.classList.add("softr-back-to-top-button"),backToTopButton.id="softr-back-to-top-button",o?o.appendChild(backToTopButton):n.appendChild(backToTopButton),backToTopButton.style.width=t.buttonWidth,backToTopButton.style.height=t.buttonHeight,backToTopButton.style.marginRight=t.buttonDToRight,backToTopButton.style.marginBottom=t.buttonDToBottom,backToTopButton.style.borderRadius=t.roundnessSize,backToTopButton.style.boxShadow=t.shadowSize,backToTopButton.style.color=t.selectedBackgroundColor,backToTopButton.style.backgroundColor=t.selectedBackgroundColor,backToTopButton.style.position=o?"absolute":"fixed",backToTopButton.style.outline="none",backToTopButton.style.bottom="0px",backToTopButton.style.right="0px",backToTopButton.style.cursor="pointer",backToTopButton.style.textAlign="center",backToTopButton.style.border="solid 2px currentColor",backToTopButton.innerHTML='<svg class="back-to-top-button-svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" > <g fill="none" fill-rule="evenodd"> <path d="M0 0H32V32H0z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> <path class="back-to-top-button-img" fill-rule="nonzero" d="M11.384 13.333h9.232c.638 0 .958.68.505 1.079l-4.613 4.07c-.28.246-.736.246-1.016 0l-4.613-4.07c-.453-.399-.133-1.079.505-1.079z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> </g> </svg>',backToTopButtonSvg=document.querySelector(".back-to-top-button-svg"),backToTopButtonSvg.style.verticalAlign="middle",backToTopButtonSvg.style.margin="auto",backToTopButtonSvg.style.justifyContent="center",backToTopButtonSvg.style.width=t.svgWidth,backToTopButtonSvg.style.height=t.svgHeight,backToTopButton.appendChild(backToTopButtonSvg),backToTopButtonImg=document.querySelector(".back-to-top-button-img"),backToTopButtonImg.style.fill=t.selectedIconColor,backToTopButtonSvg.appendChild(backToTopButtonImg),backToTopButtonImg.setAttribute("d",t.buttonD),backToTopButtonImg.setAttribute("transform",t.buttonT),o||(backToTopButton.style.display="none",window.onscroll=function(){document.body.scrollTop>20||document.documentElement.scrollTop>20?backToTopButton.style.display="block":backToTopButton.style.display="none"},backToTopButton.onclick=function(){document.body.scrollTop=0,document.documentElement.scrollTop=0})}configObj={buttonD:"M8 18.568L10.8 21.333 16 16.198 21.2 21.333 24 18.568 16 10.667z",buttonT:"translate(-1148 -172) translate(832 140) translate(32 32) translate(284)",shadowSize:"none",roundnessSize:"999px",buttonDToBottom:"64px",buttonDToRight:"32px",selectedBackgroundColor:"#c2c0bf",selectedIconColor:"#a31f34",buttonWidth:"40px",buttonHeight:"40px",svgWidth:"32px",svgHeight:"32px"},document.addEventListener("DOMContentLoaded",function(){createButton(configObj,null)});</script> </head> <body class="fixed-top-nav"> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Junshen </span>Xu</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about</a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">blog<span class="sr-only">(current)</span></a> </li> <li class="nav-item "> <a class="nav-link" href="/publications/">publications</a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">cv</a> </li> <li class="nav-item "> <a class="nav-link" href="/teaching/">teaching</a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="post distill"> <d-title> <h1>BERT: Bidirectional Encoder Representations from Transformers</h1> <p>Pre-training of Deep Bidirectional Transformers for Language Understanding</p> </d-title> <d-byline> <div class="byline grid"> <div> <h3>Published</h3> <p>October 11, 2018</p> </div> <div> <h3>Paper</h3> <p><a href="https://arxiv.org/pdf/1810.04805.pdf" rel="external nofollow noopener" target="_blank">arXiv</a></p> </div> <div> <h3>Code</h3> <p><a href="https://github.com/codertimo/BERT-pytorch" rel="external nofollow noopener" target="_blank">Github</a></p> </div> </div> </d-byline> <d-article> <d-contents> <nav class="l-text figcaption"> <h3>Contents</h3> <div><a href="#takeaways">Takeaways</a></div> <div><a href="#introduction">Introduction</a></div> <div><a href="#methods">Methods</a></div> <ul> <li><a href="#model">Model</a></li> <li><a href="#input-output-representation">Input/Output Representation</a></li> <li><a href="#pre-training-bert">Pre-Training BERT</a></li> <li><a href="#fine-tuning-bert">Fine-Tuning BERT</a></li> </ul> <div><a href="#experiments">Experiments</a></div> </nav> </d-contents> <h2 id="takeaways">Takeaways</h2> <ul> <li> <p>BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on <strong>both left and right context</strong> in all layers.</p> </li> <li> <p>The pre-trained BERT model can be fine-tuned with just one additional output layer to create SOTA models for a wide range of tasks.</p> </li> </ul> <h2 id="introduction">Introduction</h2> <p>Existing strategies for applying pre-trained representations to downstream tasks:</p> <ul> <li> <strong>feature-based:</strong> use task-specific architectures that include the pre-trained representations as additional features (e.g., ELMo<d-cite key="ELMo"></d-cite>).</li> <li> <strong>fine-tuning:</strong> introduce <em>minimal task-specific parameters</em>, and fine-tune <em>all</em> pre-trained parameters on downstream tasks (e.g., GPT<d-cite key="GPT"></d-cite>).</li> </ul> <p>GPT uses unidirectional language modeling. This limits the choice of architectures that can be used during pre-training. Such restrictions are sub-optimal for sentence-level tasks and could be very harmful when applying fine-tuning based approaches to token-level tasks.</p> <p>This work:</p> <ul> <li>improves the fine-tuning based approaches,</li> <li>replaces the left-to-right language model by the masked language model (bidirectional),</li> <li>use a “next sentence prediction” task.</li> </ul> <h2 id="methods">Methods</h2> <p>Two steps:</p> <ol> <li> <strong>Pre-training:</strong> BERT is trained on unlabeled data over different pre-training tasks.</li> <li> <strong>Fine-Tuning:</strong> BERT is first initialized with the pre-trained parameters, and all of the parameters are fine-tuned using labeled data from the downstream tasks.</li> </ol> <div class="l-page" style="text-align:center;"> <img src="https://production-media.paperswithcode.com/methods/new_BERT_Overall.jpg" width="100%" style="margin-bottom: 12px; background-color: white;"> <p>Overall pre-training and fine-tuning procedures for BERT.</p> </div> <h3 id="model">Model</h3> <p>BERT uses a multi-layer bidirectional Transformer encoder, i.e., a single stack of transformer layers.</p> <p>The BERT Transformer uses bidirectional self-attention, while the GPT Transformer uses constrained self-attention where every token can only attend to the context to its left.</p> <h3 id="inputoutput-representation">Input/Output Representation</h3> <p>To handle a variety of downstream tasks, BERT takes a single sentence or a pair of sentences (e.g., question and answer) as the input token sequence.</p> <p>Token:</p> <ul> <li>BERT uses WordPiece embeddings with a 30,000 token vocabulary.</li> <li>The first token of every sequence is a special classification token (<code class="language-plaintext highlighter-rouge">[CLS]</code>). The final hidden state corresponding to this token is used as the aggregate sequence representation for classification tasks.</li> <li>Sentence pairs are separated with a special token (<code class="language-plaintext highlighter-rouge">[SEP]</code>). A learned embedding is added to every token indicating whether it belongs to sentence <code class="language-plaintext highlighter-rouge">A</code> or sentence <code class="language-plaintext highlighter-rouge">B</code>.</li> </ul> <p>For a given token, its input representation is constructed by summing the corresponding <em>token</em>, <em>segment</em> (sentence <code class="language-plaintext highlighter-rouge">A</code> or <code class="language-plaintext highlighter-rouge">B</code>), and <em>position</em> embeddings.</p> <h3 id="pre-training-bert">Pre-Training BERT</h3> <h4 id="task-1-masked-lm">Task 1: Masked LM</h4> <p>Intuitively, a deep bidirectional model is more powerful than either a left-to-right model or the shallow concatenation of a left-to-right and a right-to-left model.</p> <p>Unfortunately, standard conditional language models can only be trained left-to-right or right-to-left, since bidirectional conditioning would allow each word to indirectly “see itself”.</p> <p>Solution: Mask Language Model (MLM), which masks some percentage of the input tokens at random, and then predicts those masked tokens.</p> <ol> <li>BERT “masks” 15% of all tokens in each sequence at random. <ul> <li>80%: replaced by the <code class="language-plaintext highlighter-rouge">[MASK]</code> token</li> <li>10%: replaced by a random token</li> <li>10%: unchanged</li> </ul> </li> <li>The final hidden vectors corresponding to the mask tokens are fed into an output softmax over the vocabulary.</li> <li>Only predict the masked words rather than reconstruct the entire input.</li> </ol> <h4 id="task-2-next-sentence-prediction-nsp">Task 2: Next Sentence Prediction (NSP)</h4> <p>Motivation: Many downstream tasks are based on understanding the relationship between two sentences, which is not directly captured by LM.</p> <ol> <li>Choosing the sentences <code class="language-plaintext highlighter-rouge">A</code> and <code class="language-plaintext highlighter-rouge">B</code> for each pre-training example, s.t. <ul> <li>50% of the time <code class="language-plaintext highlighter-rouge">B</code> is the actual next sentence that follows <code class="language-plaintext highlighter-rouge">A</code> (labeled as <code class="language-plaintext highlighter-rouge">IsNext</code>),</li> <li>50% of the time it is a random sentence from the corpus (labeled as <code class="language-plaintext highlighter-rouge">NotNext</code>).</li> </ul> </li> <li>The final hidden vector of the <code class="language-plaintext highlighter-rouge">[CLS]</code> token is used for next sentence prediction.</li> </ol> <p>The NSP task is beneficial to both QA and NLI.</p> <h4 id="pre-training-data">Pre-Training Data</h4> <ul> <li>BooksCorpus (800M words)</li> <li>English Wikipedia (2,500M words)</li> </ul> <p>It is critical to use a document-level corpus rather than a shuffled sentence-level corpus in order to extract long contiguous sequences.</p> <h3 id="fine-tuning-bert">Fine-Tuning BERT</h3> <p>For each task, simply plug in the tasks-specific inputs and outputs into BERT and fine-tune all the parameters end-to-end.</p> <p>Input sentence pairs</p> <ul> <li>Paraphrasing: sentence pairs</li> <li>Entailment: hypothesis-premise pairs</li> <li>Question answering: question-passage pairs</li> <li>Text classification or sequence tagging: degenerate text-\(\varnothing\) pairs</li> </ul> <p>Output</p> <ul> <li>Token level tasks (e.g. sequence tagging or question answering): the token representations are fed into an output layer.</li> <li>Text classification (e.g., entailment or sentiment analysis): the <code class="language-plaintext highlighter-rouge">[CLS]</code> representation is fed into an output layer.</li> </ul> <h2 id="experiments">Experiments</h2> <h3 id="glue">GLUE</h3> <p>The General Language Understanding Evaluation (GLUE) benchmark is a collection of diverse natural language understanding tasks.</p> <p>Results: Both BERT-base and BERT-large outperform all systems on all tasks by a substantial margin.</p> <h3 id="squad">SQuAD</h3> <h4 id="v11">v1.1</h4> <p>The Stanford Question Answering Dataset (SQuAD v1.1) is a collection of 100k crowdsourced question/answer pairs. Given a question and a passage from Wikipedia containing the answer, the task is to predict the answer text span in the passage.</p> <p>Represent the input question and passage as a single packed sequence (<code class="language-plaintext highlighter-rouge">A</code>: question, <code class="language-plaintext highlighter-rouge">B</code>: passage).</p> <p>Only introduce a start vector \(S\in\mathbb{R}^H\) and an end vector \(E\in\mathbb{R}^H\) (trainable weight vectors).</p> <p>The probability of word \(i\) being the start (or end) of the answer span is computed as a dot product between the output representation \(T_i\) and \(S\) (or \(E\)) followed by a softmax over all of the words in the paragraph:</p> \[P_i^S = \frac{e^{S\cdot T_i}}{\sum_j e^{S\cdot T_j}} \qquad\text{ or }\qquad P_i^E\frac{e^{E\cdot T_i}}{\sum_j e^{E\cdot T_j}}.\] <p>Loss: the sum of the log-likelihoods of the correct start and end positions.</p> <p>Prediction: Given a span \((i,j)\), compute the score as \(S\cdot T_i + E\cdot T_j\), and use the maximum scoring span where \(j\ge i\) as a prediction.</p> <h4 id="v20">v2.0</h4> <p>The SQuAD 2.0 task extends the SQuAD 1.1 problem definition by allowing for the possibility that no short answer exists in the provided paragraph, making the problem more realistic.</p> <p>Model modification: treat questions that do not have an answer as having an answer span with start and end at the <code class="language-plaintext highlighter-rouge">[CLS]</code> token. For prediction, the score of the no-answer span: \(s_\texttt{null}\) is compared to the best non-null span \(\hat{s}_{i,j}\). A non-null answer is chosen when \(\hat{s}_{i,j}&gt;s_\texttt{null}+\tau\), where \(\tau\) is a threshold. \(s_\texttt{null}=S\cdot C+ E\cdot C\), where \(C\) is the output representation of the <code class="language-plaintext highlighter-rouge">[CLS]</code> token.</p> <p>Results: BERT outperforms the previous best systems on both SQuAD v1.1 and v2.0.</p> <h3 id="swag">SWAG</h3> <p>The Situations With Adversarial Generations (SWAG) dataset contains 113k sentence-pair completion examples that evaluate grounded commonsense inference. Given a sentence, the task is to choose the most plausible continuation among four choices.</p> <p>Input: construct four input sequences, each is the concatenation of the given sentence <code class="language-plaintext highlighter-rouge">A</code> and a possible continuation <code class="language-plaintext highlighter-rouge">B</code>.</p> <p>Output: introduce a vector whose dot product with the <code class="language-plaintext highlighter-rouge">[CLS]</code> token representation \(C\) denotes a score for each choice.</p> <p>Results: BERT-large outperforms the ELMo and GPT.</p> <h3 id="ablation-studies">Ablation Studies</h3> <h4 id="effect-of-pre-training-tasks">Effect of Pre-training Tasks</h4> <p>Different pre-training tasks:</p> <ul> <li><strong>BERT</strong></li> <li> <strong>No NSP:</strong> BERT without the “next sentence prediction” task</li> <li> <strong>LTR &amp; No NSP:</strong> A standard Left-to-Right (LTR) LM without NSP, similar to GPT</li> </ul> <p>Results:</p> <ul> <li>Removing NSP hurts the performance of BERT.</li> <li>The LTR model performs worse than the MLM model on all tasks</li> </ul> <h4 id="effect-of-model-size">Effect of Model Size</h4> <ul> <li>Larger models lead to a strict accuracy improvement across different datasets.</li> <li>This work demonstrates that scaling to extreme model sizes also leads to large improvements on very <em>small-scale</em> tasks, provided that the model has been sufficiently pre-trained.</li> <li>Previous work shows evidence that larger models might not help the <em>feature-based</em> approaches.</li> </ul> <h4 id="feature-based-approach-with-bert">Feature-based Approach with BERT</h4> <p>Advantages of the feature-based approaches:</p> <ul> <li>Not all tasks can be easily represented by a Transformer encoder architecture, and therefore require a task-specific model architecture to be added.</li> <li>There are major computational benefits to pre-compute an expensive representation of the training data once and then run many experiments with cheaper models on top of this representation.</li> </ul> <p>To ablate the fine-tuning approach, the authors apply the feature-based approach by extracting the activations from one or more layers without fine-tuning any parameters of BERT. These contextual embeddings are used as input to a randomly initialized two-layer BiLSTM before the classification layer.</p> <p>Results:</p> <ul> <li>Fine-tuning outperforms feature-based approaches.</li> <li>The best-performing method concatenates the token representations from the top four hidden layers of the pre-trained Transformer, which achieves performance similar to fine-tuning.</li> <li>BERT is effective for both finetuning and feature-based approaches.</li> </ul> </d-article> <d-appendix> <d-footnote-list></d-footnote-list> <d-citation-list></d-citation-list> </d-appendix> <d-bibliography src="/assets/bibliography/paper-notes.bib"></d-bibliography> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2023 Junshen Xu. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. Last updated: May 06, 2023. </div> </footer> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script async src="https://www.googletagmanager.com/gtag/js?id=G-NYJ88YK0VS"></script> <script>function gtag(){window.dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-NYJ88YK0VS");</script> <script type="text/javascript">function progressBarSetup(){"max"in document.createElement("progress")?(initializeProgressElement(),$(document).on("scroll",function(){progressBar.attr({value:getCurrentScrollPosition()})}),$(window).on("resize",initializeProgressElement)):(resizeProgressBar(),$(document).on("scroll",resizeProgressBar),$(window).on("resize",resizeProgressBar))}function getCurrentScrollPosition(){return $(window).scrollTop()}function initializeProgressElement(){let e=$("#navbar").outerHeight(!0);$("body").css({"padding-top":e}),$("progress-container").css({"padding-top":e}),progressBar.css({top:e}),progressBar.attr({max:getDistanceToScroll(),value:getCurrentScrollPosition()})}function getDistanceToScroll(){return $(document).height()-$(window).height()}function resizeProgressBar(){progressBar.css({width:getWidthPercentage()+"%"})}function getWidthPercentage(){return getCurrentScrollPosition()/getDistanceToScroll()*100}const progressBar=$("#progress");window.onload=function(){setTimeout(progressBarSetup,50)};</script> </body> </html>
+<!DOCTYPE html>
+<!-- _layouts/paper-note.html --><html>
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+    <!-- Website verification -->
+    <meta name="google-site-verification" content="MARJu3erA7Z6jybcmR5fgSNRNtCNYMAYkk0jidGGr8A">
+<!-- Avoid warning on Google Chrome
+        Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'interest-cohort'.
+        see https://stackoverflow.com/a/75119417
+    -->
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+
+    <!-- Standard metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>BERT: Bidirectional Encoder Representations from Transformers | Junshen  Xu</title>
+    <meta name="author" content="Junshen  Xu">
+    <meta name="description" content="Pre-training of Deep Bidirectional Transformers for Language Understanding">
+    <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
+
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CRoboto+Slab:100,300,400,500,700%7CMaterial+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="/assets/img/favicon_v2.ico">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://daviddmc.github.io/blog/2018/BERT/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    <!-- Distill js -->
+    <script src="/assets/js/distillpub/template.v2.js"></script>
+    <script src="/assets/js/distillpub/transforms.v2.js"></script>
+    <script src="/assets/js/distillpub/overrides.js"></script>
+    
+    <style type="text/css">
+      .highlight pre:not(.language-text) { background-color: #272822; color: #f8f8f2;}
+      .highlight .hll { background-color: #272822; }
+      .highlight .comment { color: #75715e } /* Comment c */
+      .highlight .err { color: #960050; background-color: #1e0010 } /* Error */
+      .highlight .keyword { color: #66d9ef } /* Keyword k*/
+      .highlight .l { color: #ae81ff } /* Literal */
+      .highlight .n { color: #f8f8f2 } /* Name */
+      .highlight .operator { color: #f92672 } /* Operator o*/
+      .highlight .punctuation { color: #f8f8f2 } /* Punctuation p*/
+      .highlight .cm { color: #75715e } /* Comment.Multiline */
+      .highlight .cp { color: #75715e } /* Comment.Preproc */
+      .highlight .c1 { color: #75715e } /* Comment.Single */
+      .highlight .cs { color: #75715e } /* Comment.Special */
+      .highlight .ge { font-style: italic } /* Generic.Emph */
+      .highlight .gs { font-weight: bold } /* Generic.Strong */
+      .highlight .kc { color: #66d9ef } /* Keyword.Constant */
+      .highlight .kd { color: #66d9ef } /* Keyword.Declaration */
+      .highlight .kn { color: #f92672 } /* Keyword.Namespace */
+      .highlight .kp { color: #66d9ef } /* Keyword.Pseudo */
+      .highlight .kr { color: #66d9ef } /* Keyword.Reserved */
+      .highlight .kt { color: #66d9ef } /* Keyword.Type */
+      .highlight .ld { color: #e6db74 } /* Literal.Date */
+      .highlight .number { color: #ae81ff } /* Literal.Number m*/
+      .highlight .string { color: #e6db74 } /* Literal.String s*/
+      .highlight .na { color: #a6e22e } /* Name.Attribute */
+      .highlight .builtin { color: #f8f8f2 } /* Name.Builtin nb*/
+      .highlight .class-name { color: #a6e22e } /* Name.Class nc*/
+      .highlight .no { color: #66d9ef } /* Name.Constant */
+      .highlight .decorator { color: #a6e22e } /* Name.Decorator nd*/
+      .highlight .ni { color: #f8f8f2 } /* Name.Entity */
+      .highlight .ne { color: #a6e22e } /* Name.Exception */
+      .highlight .function { color: #a6e22e } /* Name.Function nf*/
+      .highlight .nl { color: #f8f8f2 } /* Name.Label */
+      .highlight .nn { color: #f8f8f2 } /* Name.Namespace */
+      .highlight .nx { color: #a6e22e } /* Name.Other */
+      .highlight .py { color: #f8f8f2 } /* Name.Property */
+      .highlight .nt { color: #f92672 } /* Name.Tag */
+      .highlight .nv { color: #f8f8f2 } /* Name.Variable */
+      .highlight .ow { color: #f92672 } /* Operator.Word */
+      .highlight .w { color: #f8f8f2 } /* Text.Whitespace */
+      .highlight .mf { color: #ae81ff } /* Literal.Number.Float */
+      .highlight .mh { color: #ae81ff } /* Literal.Number.Hex */
+      .highlight .mi { color: #ae81ff } /* Literal.Number.Integer */
+      .highlight .mo { color: #ae81ff } /* Literal.Number.Oct */
+      .highlight .sb { color: #e6db74 } /* Literal.String.Backtick */
+      .highlight .sc { color: #e6db74 } /* Literal.String.Char */
+      .highlight .sd { color: #e6db74 } /* Literal.String.Doc */
+      .highlight .s2 { color: #e6db74 } /* Literal.String.Double */
+      .highlight .se { color: #ae81ff } /* Literal.String.Escape */
+      .highlight .sh { color: #e6db74 } /* Literal.String.Heredoc */
+      .highlight .si { color: #e6db74 } /* Literal.String.Interpol */
+      .highlight .sx { color: #e6db74 } /* Literal.String.Other */
+      .highlight .sr { color: #e6db74 } /* Literal.String.Regex */
+      .highlight .s1 { color: #e6db74 } /* Literal.String.Single */
+      .highlight .ss { color: #e6db74 } /* Literal.String.Symbol */
+      .highlight .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+      .highlight .vc { color: #f8f8f2 } /* Name.Variable.Class */
+      .highlight .vg { color: #f8f8f2 } /* Name.Variable.Global */
+      .highlight .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+      .highlight .il { color: #ae81ff } /* Literal.Number.Integer.Long */
+      .highlight .gh { } /* Generic Heading & Diff Header */
+      .highlight .gu { color: #75715e; } /* Generic.Subheading & Diff Unified/Comment? */
+      .highlight .gd { color: #f92672; } /* Generic.Deleted & Diff Deleted */
+      .highlight .gi { color: #a6e22e; } /* Generic.Inserted & Diff Inserted */
+    </style>
+    <script> configObj = { "buttonD": "M8 18.568L10.8 21.333 16 16.198 21.2 21.333 24 18.568 16 10.667z", "buttonT": "translate(-1148 -172) translate(832 140) translate(32 32) translate(284)", "shadowSize": "none", "roundnessSize": "999px", "buttonDToBottom": "64px", "buttonDToRight": "32px", "selectedBackgroundColor": "#c2c0bf", "selectedIconColor": "#a31f34", "buttonWidth": "40px", "buttonHeight": "40px", "svgWidth": "32px", "svgHeight": "32px" }; function createButton(obj, pageSimulator) { const body = document.querySelector("body"); backToTopButton = document.createElement("span"); backToTopButton.classList.add("softr-back-to-top-button"); backToTopButton.id = "softr-back-to-top-button"; pageSimulator ? pageSimulator.appendChild(backToTopButton) : body.appendChild(backToTopButton); backToTopButton.style.width = obj.buttonWidth; backToTopButton.style.height = obj.buttonHeight; backToTopButton.style.marginRight = obj.buttonDToRight; backToTopButton.style.marginBottom = obj.buttonDToBottom; backToTopButton.style.borderRadius = obj.roundnessSize; backToTopButton.style.boxShadow = obj.shadowSize; backToTopButton.style.color = obj.selectedBackgroundColor; backToTopButton.style.backgroundColor = obj.selectedBackgroundColor; pageSimulator ? backToTopButton.style.position = "absolute" : backToTopButton.style.position = "fixed"; backToTopButton.style.outline = "none"; backToTopButton.style.bottom = "0px"; backToTopButton.style.right = "0px"; backToTopButton.style.cursor = "pointer"; backToTopButton.style.textAlign = "center"; backToTopButton.style.border = "solid 2px currentColor"; backToTopButton.innerHTML = '<svg class="back-to-top-button-svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" > <g fill="none" fill-rule="evenodd"> <path d="M0 0H32V32H0z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> <path class="back-to-top-button-img" fill-rule="nonzero" d="M11.384 13.333h9.232c.638 0 .958.68.505 1.079l-4.613 4.07c-.28.246-.736.246-1.016 0l-4.613-4.07c-.453-.399-.133-1.079.505-1.079z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> </g> </svg>'; backToTopButtonSvg = document.querySelector(".back-to-top-button-svg"); backToTopButtonSvg.style.verticalAlign = "middle"; backToTopButtonSvg.style.margin = "auto"; backToTopButtonSvg.style.justifyContent = "center"; backToTopButtonSvg.style.width = obj.svgWidth; backToTopButtonSvg.style.height = obj.svgHeight; backToTopButton.appendChild(backToTopButtonSvg); backToTopButtonImg = document.querySelector(".back-to-top-button-img"); backToTopButtonImg.style.fill = obj.selectedIconColor; backToTopButtonSvg.appendChild(backToTopButtonImg); backToTopButtonImg.setAttribute("d", obj.buttonD); backToTopButtonImg.setAttribute("transform", obj.buttonT); if (!pageSimulator) { backToTopButton.style.display = "none"; window.onscroll = function () { if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) { backToTopButton.style.display = "block"; } else { backToTopButton.style.display = "none"; } }; backToTopButton.onclick = function () { document.body.scrollTop = 0; document.documentElement.scrollTop = 0; }; } }; document.addEventListener("DOMContentLoaded", function () { createButton(configObj, null); });</script>
+  </head>
+  
+  <body class="fixed-top-nav">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Junshen </span>Xu</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">about</a>
+              </li>
+              
+              <!-- Blog -->
+              <li class="nav-item active">
+                <a class="nav-link" href="/blog/">blog<span class="sr-only">(current)</span></a>
+              </li>
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/cv/">cv</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/teaching/">teaching</a>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="post distill">
+
+      <d-title>
+        <h1>BERT: Bidirectional Encoder Representations from Transformers</h1>
+        <p>Pre-training of Deep Bidirectional Transformers for Language Understanding</p>
+      </d-title>
+
+      <d-byline>
+          <div class="byline grid">
+            <div>
+              <h3>Published</h3>
+                <p>October 11, 2018</p> 
+            </div>
+            
+            <div>
+              <h3>Paper</h3>
+                <p><a href="https://arxiv.org/pdf/1810.04805.pdf" rel="external nofollow noopener" target="_blank">arXiv</a></p> 
+            </div>
+            
+            
+            <div>
+              <h3>Code</h3>
+                <p><a href="https://github.com/codertimo/BERT-pytorch" rel="external nofollow noopener" target="_blank">Github</a></p> 
+            </div>
+            
+          </div>
+      </d-byline>
+
+      <d-article>
+        <d-contents>
+          <nav class="l-text figcaption">
+          <h3>Contents</h3>
+            <div><a href="#takeaways">Takeaways</a></div>
+            <div><a href="#introduction">Introduction</a></div>
+            <div><a href="#methods">Methods</a></div>
+            <ul>
+              <li><a href="#model">Model</a></li>
+              <li><a href="#input-output-representation">Input/Output Representation</a></li>
+              <li><a href="#pre-training-bert">Pre-Training BERT</a></li>
+              <li><a href="#fine-tuning-bert">Fine-Tuning BERT</a></li>
+              
+            </ul>
+<div><a href="#experiments">Experiments</a></div>
+            
+          </nav>
+        </d-contents>
+
+        <h2 id="takeaways">Takeaways</h2>
+
+<ul>
+  <li>
+    <p>BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on <strong>both left and right context</strong> in all layers.</p>
+  </li>
+  <li>
+    <p>The pre-trained BERT model can be fine-tuned with just one additional output layer to create SOTA models for a wide range of tasks.</p>
+  </li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Existing strategies for applying pre-trained representations to downstream tasks:</p>
+
+<ul>
+  <li>
+<strong>feature-based:</strong> use task-specific architectures that include the pre-trained representations as additional features (e.g., ELMo<d-cite key="ELMo"></d-cite>).</li>
+  <li>
+<strong>fine-tuning:</strong> introduce <em>minimal task-specific parameters</em>, and fine-tune <em>all</em> pre-trained parameters on downstream tasks (e.g., GPT<d-cite key="GPT"></d-cite>).</li>
+</ul>
+
+<p>GPT uses unidirectional language modeling. This limits the choice of architectures that can be used during pre-training. Such restrictions are sub-optimal for sentence-level tasks and could be very harmful when applying fine-tuning based approaches to token-level tasks.</p>
+
+<p>This work:</p>
+
+<ul>
+  <li>improves the fine-tuning based approaches,</li>
+  <li>replaces the left-to-right language model by the masked language model (bidirectional),</li>
+  <li>use a “next sentence prediction” task.</li>
+</ul>
+
+<h2 id="methods">Methods</h2>
+
+<p>Two steps:</p>
+
+<ol>
+  <li>
+<strong>Pre-training:</strong> BERT is trained on unlabeled data over different pre-training tasks.</li>
+  <li>
+<strong>Fine-Tuning:</strong> BERT is first initialized with the pre-trained parameters, and all of the parameters are fine-tuned using labeled data from the downstream tasks.</li>
+</ol>
+
+<div class="l-page" style="text-align:center;">
+  <img src="https://production-media.paperswithcode.com/methods/new_BERT_Overall.jpg" width="100%" style="margin-bottom: 12px; background-color: white;">
+  <p>Overall pre-training and fine-tuning procedures for BERT.</p>
+</div>
+
+<h3 id="model">Model</h3>
+
+<p>BERT uses a multi-layer bidirectional Transformer encoder, i.e., a single stack of transformer layers.</p>
+
+<p>The BERT Transformer uses bidirectional self-attention, while the GPT Transformer uses constrained self-attention where every token can only attend to the context to its left.</p>
+
+<h3 id="inputoutput-representation">Input/Output Representation</h3>
+
+<p>To handle a variety of downstream tasks, BERT takes a single sentence or a pair of sentences (e.g., question and answer) as the input token sequence.</p>
+
+<p>Token:</p>
+
+<ul>
+  <li>BERT uses WordPiece embeddings with a 30,000 token vocabulary.</li>
+  <li>The first token of every sequence is a special classification token (<code class="language-plaintext highlighter-rouge">[CLS]</code>). The final hidden state corresponding to this token is used as the aggregate sequence representation for classification tasks.</li>
+  <li>Sentence pairs are separated with a special token (<code class="language-plaintext highlighter-rouge">[SEP]</code>). A learned embedding is added to every token indicating whether it belongs to sentence <code class="language-plaintext highlighter-rouge">A</code> or sentence <code class="language-plaintext highlighter-rouge">B</code>.</li>
+</ul>
+
+<p>For a given token, its input representation is constructed by summing the corresponding <em>token</em>, <em>segment</em> (sentence <code class="language-plaintext highlighter-rouge">A</code> or <code class="language-plaintext highlighter-rouge">B</code>), and <em>position</em> embeddings.</p>
+
+<h3 id="pre-training-bert">Pre-Training BERT</h3>
+
+<h4 id="task-1-masked-lm">Task 1: Masked LM</h4>
+
+<p>Intuitively, a deep bidirectional model is more powerful than either a left-to-right
+model or the shallow concatenation of a left-to-right and a right-to-left model.</p>
+
+<p>Unfortunately, standard conditional language models can only be trained left-to-right or right-to-left, since bidirectional conditioning would allow each word to indirectly “see itself”.</p>
+
+<p>Solution: Mask Language Model (MLM), which masks some percentage of the input tokens at random, and then predicts those masked tokens.</p>
+
+<ol>
+  <li>BERT “masks” 15% of all tokens in each sequence at random.
+    <ul>
+      <li>80%: replaced by the <code class="language-plaintext highlighter-rouge">[MASK]</code> token</li>
+      <li>10%: replaced by a random token</li>
+      <li>10%: unchanged</li>
+    </ul>
+  </li>
+  <li>The final hidden vectors corresponding to the mask tokens are fed into an output softmax over the vocabulary.</li>
+  <li>Only predict the masked words rather than reconstruct the entire input.</li>
+</ol>
+
+<h4 id="task-2-next-sentence-prediction-nsp">Task 2: Next Sentence Prediction (NSP)</h4>
+
+<p>Motivation: Many downstream tasks are based on understanding the relationship between two sentences, which is not directly captured by LM.</p>
+
+<ol>
+  <li>Choosing the sentences <code class="language-plaintext highlighter-rouge">A</code> and <code class="language-plaintext highlighter-rouge">B</code> for each pre-training example, s.t.
+    <ul>
+      <li>50% of the time <code class="language-plaintext highlighter-rouge">B</code> is the actual next sentence that follows <code class="language-plaintext highlighter-rouge">A</code> (labeled as <code class="language-plaintext highlighter-rouge">IsNext</code>),</li>
+      <li>50% of the time it is a random sentence from the corpus (labeled as <code class="language-plaintext highlighter-rouge">NotNext</code>).</li>
+    </ul>
+  </li>
+  <li>The final hidden vector of the <code class="language-plaintext highlighter-rouge">[CLS]</code> token is used for next sentence prediction.</li>
+</ol>
+
+<p>The NSP task is beneficial to both QA and NLI.</p>
+
+<h4 id="pre-training-data">Pre-Training Data</h4>
+
+<ul>
+  <li>BooksCorpus (800M words)</li>
+  <li>English Wikipedia (2,500M words)</li>
+</ul>
+
+<p>It is critical to use a document-level corpus rather than a shuffled sentence-level corpus in order to extract long contiguous sequences.</p>
+
+<h3 id="fine-tuning-bert">Fine-Tuning BERT</h3>
+
+<p>For each task, simply plug in the tasks-specific inputs and outputs into BERT and fine-tune all the parameters end-to-end.</p>
+
+<p>Input sentence pairs</p>
+
+<ul>
+  <li>Paraphrasing: sentence pairs</li>
+  <li>Entailment: hypothesis-premise pairs</li>
+  <li>Question answering: question-passage pairs</li>
+  <li>Text classification or sequence tagging: degenerate text-\(\varnothing\) pairs</li>
+</ul>
+
+<p>Output</p>
+
+<ul>
+  <li>Token level tasks (e.g. sequence tagging or question answering): the token representations are fed into an output layer.</li>
+  <li>Text classification (e.g., entailment or sentiment analysis): the <code class="language-plaintext highlighter-rouge">[CLS]</code> representation is fed into an output layer.</li>
+</ul>
+
+<h2 id="experiments">Experiments</h2>
+
+<h3 id="glue">GLUE</h3>
+
+<p>The General Language Understanding Evaluation (GLUE) benchmark is a collection of diverse natural language understanding tasks.</p>
+
+<p>Results: Both BERT-base and BERT-large outperform all systems on all tasks by a substantial margin.</p>
+
+<h3 id="squad">SQuAD</h3>
+
+<h4 id="v11">v1.1</h4>
+
+<p>The Stanford Question Answering Dataset (SQuAD v1.1) is a collection of 100k crowdsourced question/answer pairs.  Given a question and a passage from Wikipedia containing the answer, the task is to predict the answer text span in the passage.</p>
+
+<p>Represent the input question and passage as a single packed sequence (<code class="language-plaintext highlighter-rouge">A</code>: question, <code class="language-plaintext highlighter-rouge">B</code>: passage).</p>
+
+<p>Only introduce a start vector \(S\in\mathbb{R}^H\) and an end vector \(E\in\mathbb{R}^H\) (trainable weight vectors).</p>
+
+<p>The probability of word \(i\) being the start (or end) of the answer span is computed as a dot product between the output representation \(T_i\) and \(S\) (or \(E\)) followed by a softmax over all of the words in the paragraph:</p>
+
+\[P_i^S = \frac{e^{S\cdot T_i}}{\sum_j e^{S\cdot T_j}} \qquad\text{ or }\qquad P_i^E\frac{e^{E\cdot T_i}}{\sum_j e^{E\cdot T_j}}.\]
+
+<p>Loss: the sum of the log-likelihoods of the correct start and end positions.</p>
+
+<p>Prediction: Given a span \((i,j)\), compute the score as \(S\cdot T_i + E\cdot T_j\), and use the maximum scoring span where \(j\ge i\) as a prediction.</p>
+
+<h4 id="v20">v2.0</h4>
+
+<p>The SQuAD 2.0 task extends the SQuAD 1.1 problem definition by allowing for the possibility that no short answer exists in the provided paragraph, making the problem more realistic.</p>
+
+<p>Model modification: treat questions that do not have an answer as having an answer span with start and end at the <code class="language-plaintext highlighter-rouge">[CLS]</code> token. For prediction, the score of the no-answer span: \(s_\texttt{null}\) is compared to the best non-null span \(\hat{s}_{i,j}\). A non-null answer is chosen when \(\hat{s}_{i,j}&gt;s_\texttt{null}+\tau\), where \(\tau\) is a threshold. \(s_\texttt{null}=S\cdot C+ E\cdot C\), where \(C\) is the output representation of the <code class="language-plaintext highlighter-rouge">[CLS]</code> token.</p>
+
+<p>Results: BERT outperforms the previous best systems on both SQuAD v1.1 and v2.0.</p>
+
+<h3 id="swag">SWAG</h3>
+
+<p>The Situations With Adversarial Generations (SWAG) dataset contains 113k sentence-pair completion examples that evaluate grounded commonsense inference. Given a sentence, the task is to choose the most plausible continuation among four choices.</p>
+
+<p>Input: construct four input sequences, each is the concatenation of the given sentence <code class="language-plaintext highlighter-rouge">A</code> and a possible continuation <code class="language-plaintext highlighter-rouge">B</code>.</p>
+
+<p>Output: introduce a vector whose dot product with the <code class="language-plaintext highlighter-rouge">[CLS]</code> token representation \(C\) denotes a score for each choice.</p>
+
+<p>Results: BERT-large outperforms the ELMo and GPT.</p>
+
+<h3 id="ablation-studies">Ablation Studies</h3>
+
+<h4 id="effect-of-pre-training-tasks">Effect of Pre-training Tasks</h4>
+
+<p>Different pre-training tasks:</p>
+
+<ul>
+  <li><strong>BERT</strong></li>
+  <li>
+<strong>No NSP:</strong> BERT without the “next sentence prediction” task</li>
+  <li>
+<strong>LTR &amp; No NSP:</strong> A standard Left-to-Right (LTR) LM without NSP, similar to GPT</li>
+</ul>
+
+<p>Results:</p>
+
+<ul>
+  <li>Removing NSP hurts the performance of BERT.</li>
+  <li>The LTR model performs worse than the MLM model on all tasks</li>
+</ul>
+
+<h4 id="effect-of-model-size">Effect of Model Size</h4>
+
+<ul>
+  <li>Larger models lead to a strict accuracy improvement across different datasets.</li>
+  <li>This work demonstrates that scaling to extreme model sizes also leads to large improvements on very <em>small-scale</em> tasks, provided that the model has been sufficiently pre-trained.</li>
+  <li>Previous work shows evidence that larger models might not help the <em>feature-based</em> approaches.</li>
+</ul>
+
+<h4 id="feature-based-approach-with-bert">Feature-based Approach with BERT</h4>
+
+<p>Advantages of the feature-based approaches:</p>
+
+<ul>
+  <li>Not all tasks can be easily represented by a Transformer encoder architecture, and therefore require a task-specific model architecture to be added.</li>
+  <li>There are major computational benefits to pre-compute an expensive representation of the training data once and then run many experiments with cheaper models on top of this representation.</li>
+</ul>
+
+<p>To ablate the fine-tuning approach, the authors apply the feature-based approach by extracting the activations from one or more layers without fine-tuning any parameters of BERT. These contextual embeddings are used as input to a randomly initialized two-layer BiLSTM before the classification layer.</p>
+
+<p>Results:</p>
+
+<ul>
+  <li>Fine-tuning outperforms feature-based approaches.</li>
+  <li>The best-performing method concatenates the token representations from the top four hidden layers of the pre-trained Transformer, which achieves performance similar to fine-tuning.</li>
+  <li>BERT is effective for both finetuning and feature-based approaches.</li>
+</ul>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+      <d-bibliography src="/assets/bibliography/paper-notes.bib"></d-bibliography>
+    </div>
+
+    <!-- Footer -->    
+    <footer class="fixed-bottom">
+      <div class="container mt-0">
+        © Copyright 2023 Junshen  Xu. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>.
+Last updated: May 06, 2023.
+      </div>
+    </footer>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NYJ88YK0VS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ window.dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-NYJ88YK0VS');
+  </script>
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+  </body>
+</html>

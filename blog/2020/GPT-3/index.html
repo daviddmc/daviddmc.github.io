@@ -1,3 +1,658 @@
-<!DOCTYPE html> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta name="google-site-verification" content="MARJu3erA7Z6jybcmR5fgSNRNtCNYMAYkk0jidGGr8A"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>GPT-3 | Junshen Xu</title> <meta name="author" content="Junshen Xu"> <meta name="description" content="Language Models are Few-Shot Learners"> <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website"> <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CRoboto+Slab:100,300,400,500,700%7CMaterial+Icons"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="/assets/img/favicon_v2.ico"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="https://daviddmc.github.io/blog/2020/GPT-3/"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark"> <script src="/assets/js/theme.js"></script> <script src="/assets/js/dark_mode.js"></script> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script src="/assets/js/distillpub/template.v2.js"></script> <script src="/assets/js/distillpub/transforms.v2.js"></script> <script src="/assets/js/distillpub/overrides.js"></script> <style type="text/css">.highlight pre:not(.language-text){background-color:#272822;color:#f8f8f2}.highlight .hll{background-color:#272822}.highlight .comment{color:#75715e}.highlight .err{color:#960050;background-color:#1e0010}.highlight .keyword{color:#66d9ef}.highlight .l{color:#ae81ff}.highlight .n{color:#f8f8f2}.highlight .operator{color:#f92672}.highlight .punctuation{color:#f8f8f2}.highlight .cm{color:#75715e}.highlight .cp{color:#75715e}.highlight .c1{color:#75715e}.highlight .cs{color:#75715e}.highlight .ge{font-style:italic}.highlight .gs{font-weight:bold}.highlight .kc{color:#66d9ef}.highlight .kd{color:#66d9ef}.highlight .kn{color:#f92672}.highlight .kp{color:#66d9ef}.highlight .kr{color:#66d9ef}.highlight .kt{color:#66d9ef}.highlight .ld{color:#e6db74}.highlight .number{color:#ae81ff}.highlight .string{color:#e6db74}.highlight .na{color:#a6e22e}.highlight .builtin{color:#f8f8f2}.highlight .class-name{color:#a6e22e}.highlight .no{color:#66d9ef}.highlight .decorator{color:#a6e22e}.highlight .ni{color:#f8f8f2}.highlight .ne{color:#a6e22e}.highlight .function{color:#a6e22e}.highlight .nl{color:#f8f8f2}.highlight .nn{color:#f8f8f2}.highlight .nx{color:#a6e22e}.highlight .py{color:#f8f8f2}.highlight .nt{color:#f92672}.highlight .nv{color:#f8f8f2}.highlight .ow{color:#f92672}.highlight .w{color:#f8f8f2}.highlight .mf{color:#ae81ff}.highlight .mh{color:#ae81ff}.highlight .mi{color:#ae81ff}.highlight .mo{color:#ae81ff}.highlight .sb{color:#e6db74}.highlight .sc{color:#e6db74}.highlight .sd{color:#e6db74}.highlight .s2{color:#e6db74}.highlight .se{color:#ae81ff}.highlight .sh{color:#e6db74}.highlight .si{color:#e6db74}.highlight .sx{color:#e6db74}.highlight .sr{color:#e6db74}.highlight .s1{color:#e6db74}.highlight .ss{color:#e6db74}.highlight .bp{color:#f8f8f2}.highlight .vc{color:#f8f8f2}.highlight .vg{color:#f8f8f2}.highlight .vi{color:#f8f8f2}.highlight .il{color:#ae81ff}.highlight .gu{color:#75715e}.highlight .gd{color:#f92672}.highlight .gi{color:#a6e22e}</style> <script>function createButton(t,o){const n=document.querySelector("body");backToTopButton=document.createElement("span"),backToTopButton.classList.add("softr-back-to-top-button"),backToTopButton.id="softr-back-to-top-button",o?o.appendChild(backToTopButton):n.appendChild(backToTopButton),backToTopButton.style.width=t.buttonWidth,backToTopButton.style.height=t.buttonHeight,backToTopButton.style.marginRight=t.buttonDToRight,backToTopButton.style.marginBottom=t.buttonDToBottom,backToTopButton.style.borderRadius=t.roundnessSize,backToTopButton.style.boxShadow=t.shadowSize,backToTopButton.style.color=t.selectedBackgroundColor,backToTopButton.style.backgroundColor=t.selectedBackgroundColor,backToTopButton.style.position=o?"absolute":"fixed",backToTopButton.style.outline="none",backToTopButton.style.bottom="0px",backToTopButton.style.right="0px",backToTopButton.style.cursor="pointer",backToTopButton.style.textAlign="center",backToTopButton.style.border="solid 2px currentColor",backToTopButton.innerHTML='<svg class="back-to-top-button-svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" > <g fill="none" fill-rule="evenodd"> <path d="M0 0H32V32H0z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> <path class="back-to-top-button-img" fill-rule="nonzero" d="M11.384 13.333h9.232c.638 0 .958.68.505 1.079l-4.613 4.07c-.28.246-.736.246-1.016 0l-4.613-4.07c-.453-.399-.133-1.079.505-1.079z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> </g> </svg>',backToTopButtonSvg=document.querySelector(".back-to-top-button-svg"),backToTopButtonSvg.style.verticalAlign="middle",backToTopButtonSvg.style.margin="auto",backToTopButtonSvg.style.justifyContent="center",backToTopButtonSvg.style.width=t.svgWidth,backToTopButtonSvg.style.height=t.svgHeight,backToTopButton.appendChild(backToTopButtonSvg),backToTopButtonImg=document.querySelector(".back-to-top-button-img"),backToTopButtonImg.style.fill=t.selectedIconColor,backToTopButtonSvg.appendChild(backToTopButtonImg),backToTopButtonImg.setAttribute("d",t.buttonD),backToTopButtonImg.setAttribute("transform",t.buttonT),o||(backToTopButton.style.display="none",window.onscroll=function(){document.body.scrollTop>20||document.documentElement.scrollTop>20?backToTopButton.style.display="block":backToTopButton.style.display="none"},backToTopButton.onclick=function(){document.body.scrollTop=0,document.documentElement.scrollTop=0})}configObj={buttonD:"M8 18.568L10.8 21.333 16 16.198 21.2 21.333 24 18.568 16 10.667z",buttonT:"translate(-1148 -172) translate(832 140) translate(32 32) translate(284)",shadowSize:"none",roundnessSize:"999px",buttonDToBottom:"64px",buttonDToRight:"32px",selectedBackgroundColor:"#c2c0bf",selectedIconColor:"#a31f34",buttonWidth:"40px",buttonHeight:"40px",svgWidth:"32px",svgHeight:"32px"},document.addEventListener("DOMContentLoaded",function(){createButton(configObj,null)});</script> </head> <body class="fixed-top-nav"> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Junshen </span>Xu</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about</a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">blog<span class="sr-only">(current)</span></a> </li> <li class="nav-item "> <a class="nav-link" href="/publications/">publications</a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">cv</a> </li> <li class="nav-item "> <a class="nav-link" href="/teaching/">teaching</a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="post distill"> <d-title> <h1>GPT-3</h1> <p>Language Models are Few-Shot Learners</p> </d-title> <d-byline> <div class="byline grid"> <div> <h3>Published</h3> <p>July 22, 2020</p> </div> <div> <h3>Paper</h3> <p><a href="https://arxiv.org/pdf/2005.14165.pdf" rel="external nofollow noopener" target="_blank">arXiv</a></p> </div> </div> </d-byline> <d-article> <d-contents> <nav class="l-text figcaption"> <h3>Contents</h3> <div><a href="#takeaways">Takeaways</a></div> <div><a href="#introduction">Introduction</a></div> <ul> <li><a href="#problems-with-pre-training-fine-tune">Problems with Pre-training + Fine-tune</a></li> <li><a href="#meta-learning">Meta Learning</a></li> <li><a href="#model-scale">Model Scale</a></li> </ul> <div><a href="#methods">Methods</a></div> <ul> <li><a href="#different-settings">Different Settings</a></li> <li><a href="#model">Model</a></li> <li><a href="#training-dataset">Training Dataset</a></li> </ul> <div><a href="#experiments">Experiments</a></div> <div><a href="#limitations">Limitations</a></div> </nav> </d-contents> <h2 id="takeaways">Takeaways</h2> <ul> <li>Although recent large pre-training models are <strong>task-agnostic in architecture</strong>, they still require <strong>task-specific fine-tuning</strong> datasets of thousands of examples.</li> <li>The author train GPT-3, an autoregressive LM with 175B parameters, and test its performance in the <strong>few-shot</strong> setting, i.e., providing task descriptions and few-shot demonstrations purely via text interaction (prompt), and without any gradient updates.</li> <li>This work shows that scaling up LM greatly improves <strong>task-agnostic</strong>, <strong>few-shot</strong> performance, sometimes even reaching competitiveness with prior SOTA finetuning approaches.</li> </ul> <h2 id="introduction">Introduction</h2> <p>The trend of pre-trained language representation NLP</p> <ol> <li>single-layer pre-trained word embedding + task-specific architectures</li> <li>multiple layers of representations (e.g. RNN) + task-specific architectures</li> <li>pre-train RNNs or Transformers, and then directly fine-tune, them without task-specific architectures.</li> </ol> <h3 id="problems-with-pre-training--fine-tune">Problems with Pre-training + Fine-tune</h3> <ul> <li>Although the last paradigm uses <strong>task-agnostic</strong> architectures, they still require <strong>task-specific</strong> fine-tuning.</li> <li>The need for a large dataset of labeled examples for every new task limits the applicability of LMs.</li> <li>The potential to exploit spurious correlations in training data fundamentally grows with the expressiveness of the model and the narrowness of the training distribution.</li> <li>Humans do not require large supervised datasets to learn most language tasks. A brief directive in natural language + a tiny number of examples is often sufficient.</li> </ul> <h3 id="meta-learning">Meta Learning</h3> <p>In the context of LMs, Meta learning means the model develops a broad set of skills at training time and then uses those abilities at inference time to rapidly adapt to or recognize the desired task.</p> <p>GPT-2<d-cite key="GPT-2"></d-cite> attempts to do this via what “<em>in-context learning</em>”: the model is conditioned on natural language instruction and/or a few demonstrations of the task.</p> <p>While it has shown some initial promise, this approach still achieves results far inferior to fine-tuning</p> <p>This work shows that scaling up language models greatly improves <em>task-agnostic</em>, <em>few-shot</em> performance, sometimes even reaching competitiveness with prior state-of-the-art finetuning approaches.</p> <h3 id="model-scale">Model Scale</h3> <table> <tbody> <tr> <td>Model</td> <td>GPT<d-cite key="GPT"></d-cite> </td> <td>BERT<d-cite key="BERT"></d-cite> </td> <td>GPT-2<d-cite key="GPT-2"></d-cite> </td> <td>Megatron-LM<d-cite key="Megatron-LM"></d-cite> </td> <td>T5<d-cite key="T5"></d-cite> </td> <td>Turing-NLG<d-cite key="Turing-NLG"></d-cite> </td> </tr> <tr> <td># of parameters</td> <td>100M</td> <td>300M</td> <td>1.5B</td> <td>8B</td> <td>11B</td> <td>17B</td> </tr> </tbody> </table> <p>There is evidence suggesting that log loss, which correlates well with many downstream tasks, follows a smooth trend of improvement with scale. Since in-context learning involves absorbing many skills and tasks within the parameters of the model, it is plausible that in-context learning abilities might show similarly strong gains with scale.</p> <p>The authors test this hypothesis by training a <strong>175B</strong> parameter autoregressive language model (GPT-3) and measuring its in-context learning abilities (few-shot, one-shot, and zero-shot).</p> <h2 id="methods">Methods</h2> <h3 id="different-settings">Different Settings</h3> <h4 id="fine-tuning-ft">Fine-Tuning (FT)</h4> <ul> <li>A pre-trained model by training on a supervised dataset specific to the desired task. Typically thousands to hundreds of thousands of labeled examples are used.</li> <li> <em>The main advantage</em> is strong performance on many benchmarks.</li> <li> <em>The main disadvantages</em> are the need for a new large dataset for every task, the potential for poor generalization out-of-distribution, and the potential to exploit spurious features of the training data, potentially resulting in an unfair comparison with human performance.</li> <li>In this work, the authors do not fine-tune GPT-3.</li> </ul> <h4 id="few-shot-fs">Few-Shot (FS)</h4> <ul> <li>Refer to the setting where the model is given a few demonstrations of the task at inference time as conditioning, but no weight updates are allowed.</li> <li>The number of samples \(K\) is in the range of 10 to 100 as this is how many examples can fit in the model’s context window (<code class="language-plaintext highlighter-rouge">nctx = 2048</code>).</li> <li>The main advantages: A major reduction in the need for task-specific data and reduced potential to learn an overly narrow distribution from a large but narrow fine-tuning dataset.</li> <li>The main disadvantage: Results from this method have so far been much worse than SOTA fine-tuned models. Also, a small amount of task-specific data is still required.</li> </ul> <h4 id="one-shot-1s">One-Shot (1S)</h4> <ul> <li>It is the same as few-shot except that only one demonstration is allowed, in addition to a natural language description of the task.</li> <li>The reason to distinguish one-shot from few-shot and zero-shot (below) is that it most closely matches the way in which some tasks are communicated to humans.</li> </ul> <h4 id="zero-shot-0s">Zero-Shot (0S)</h4> <ul> <li>No demonstrations are allowed, and the model is only given a natural language instruction describing the task.</li> <li>This method provides maximum convenience, potential for robustness, and avoidance of spurious correlations.</li> <li>But it is also the most challenging setting.</li> </ul> <h3 id="model">Model</h3> <p>The same model and architecture as GPT-2, with the exception that</p> <ol> <li>GPT-3 uses alternating dense and locally banded sparse attention patterns in the layers of the transformer.</li> <li>To study the dependence of ML performance on model size, 8 different sizes of model were trained, ranging over three orders of magnitude from 125 million parameters to 175 billion parameters, with the last being the model called GPT-3.</li> </ol> <h3 id="training-dataset">Training Dataset</h3> <p>Unfiltered or lightly filtered versions of Common Crawl tend to have lower quality than more curated datasets. Therefore, the authors took 3 steps to improve the average quality of the datasets:</p> <ol> <li>Downloaded and filtered a version of CommonCrawl based on similarity to a range of high-quality reference corpora;</li> <li>Performed fuzzy deduplication at the document level, within and across datasets, to prevent redundancy and preserve the integrity of held-out validation set as an accurate measure of overfitting;</li> <li>Added known high-quality reference corpora to the training mix to augment CommonCrawl and increase its diversity.</li> </ol> <p>The overall training dataset has about 500B tokens.</p> <h2 id="experiments">Experiments</h2> <h3 id="evaluation">Evaluation</h3> <p>For few-shot learning, the authors evaluate each example in the evaluation set by randomly drawing \(K\) examples from that task’s training set as conditioning</p> <h4 id="multiple-choice-problems">Multiple-Choice Problems</h4> <p>Provide \(K\) examples of context plus correct completion, followed by one example of context only, and compare the LM likelihood of each completion.</p> <p>For most tasks, the per-token likelihood (to normalize for length) is compared. However, sometime it might be beneficial to normalize by the unconditional probability of each completion, by computing</p> \[\frac{P(\texttt{completion}|\texttt{context})}{P(\texttt{completion}|\texttt{answer context})},\] <p>where answer context is the string <code class="language-plaintext highlighter-rouge">"Answer: "</code> or <code class="language-plaintext highlighter-rouge">"A: "</code>.</p> <h4 id="binary-classification">Binary Classification</h4> <p>Give the options more semantically meaningful names (e.g. <code class="language-plaintext highlighter-rouge">"True"</code> or <code class="language-plaintext highlighter-rouge">"False"</code> rather than 0 or 1) and then treat the task like multiple choice.</p> <h4 id="free-form-completion">Free-Form Completion</h4> <p>Use beam search with a beam width of 4 and a length penalty of \(\alpha = 0.6\).</p> <h3 id="language-modeling-cloze-and-completion">Language Modeling, Cloze, and Completion</h3> <h4 id="language-modeling">Language Modeling</h4> <p>Evaluate the zero-shot GPT-3 by computing the perplexity on the Penn Tree Bank dataset. GPT-3 sets a new SOTA compared to GPT-2.</p> <h4 id="lambada">LAMBADA</h4> <p>Task: The model is asked to predict the last word of sentences which requires reading a paragraph of context.</p> <p>The authors use a fill-in-the-blank format to guide GPT-3 to predict a word rather than other valid continuations of the paragraph:</p> <div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Alice was friends with Bob. Alice went to visit her friend ___. → Bob
+<!DOCTYPE html>
+<!-- _layouts/paper-note.html --><html>
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+    <!-- Website verification -->
+    <meta name="google-site-verification" content="MARJu3erA7Z6jybcmR5fgSNRNtCNYMAYkk0jidGGr8A">
+<!-- Avoid warning on Google Chrome
+        Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'interest-cohort'.
+        see https://stackoverflow.com/a/75119417
+    -->
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+
+    <!-- Standard metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>GPT-3 | Junshen  Xu</title>
+    <meta name="author" content="Junshen  Xu">
+    <meta name="description" content="Language Models are Few-Shot Learners">
+    <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
+
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CRoboto+Slab:100,300,400,500,700%7CMaterial+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="/assets/img/favicon_v2.ico">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://daviddmc.github.io/blog/2020/GPT-3/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    <!-- Distill js -->
+    <script src="/assets/js/distillpub/template.v2.js"></script>
+    <script src="/assets/js/distillpub/transforms.v2.js"></script>
+    <script src="/assets/js/distillpub/overrides.js"></script>
+    
+    <style type="text/css">
+      .highlight pre:not(.language-text) { background-color: #272822; color: #f8f8f2;}
+      .highlight .hll { background-color: #272822; }
+      .highlight .comment { color: #75715e } /* Comment c */
+      .highlight .err { color: #960050; background-color: #1e0010 } /* Error */
+      .highlight .keyword { color: #66d9ef } /* Keyword k*/
+      .highlight .l { color: #ae81ff } /* Literal */
+      .highlight .n { color: #f8f8f2 } /* Name */
+      .highlight .operator { color: #f92672 } /* Operator o*/
+      .highlight .punctuation { color: #f8f8f2 } /* Punctuation p*/
+      .highlight .cm { color: #75715e } /* Comment.Multiline */
+      .highlight .cp { color: #75715e } /* Comment.Preproc */
+      .highlight .c1 { color: #75715e } /* Comment.Single */
+      .highlight .cs { color: #75715e } /* Comment.Special */
+      .highlight .ge { font-style: italic } /* Generic.Emph */
+      .highlight .gs { font-weight: bold } /* Generic.Strong */
+      .highlight .kc { color: #66d9ef } /* Keyword.Constant */
+      .highlight .kd { color: #66d9ef } /* Keyword.Declaration */
+      .highlight .kn { color: #f92672 } /* Keyword.Namespace */
+      .highlight .kp { color: #66d9ef } /* Keyword.Pseudo */
+      .highlight .kr { color: #66d9ef } /* Keyword.Reserved */
+      .highlight .kt { color: #66d9ef } /* Keyword.Type */
+      .highlight .ld { color: #e6db74 } /* Literal.Date */
+      .highlight .number { color: #ae81ff } /* Literal.Number m*/
+      .highlight .string { color: #e6db74 } /* Literal.String s*/
+      .highlight .na { color: #a6e22e } /* Name.Attribute */
+      .highlight .builtin { color: #f8f8f2 } /* Name.Builtin nb*/
+      .highlight .class-name { color: #a6e22e } /* Name.Class nc*/
+      .highlight .no { color: #66d9ef } /* Name.Constant */
+      .highlight .decorator { color: #a6e22e } /* Name.Decorator nd*/
+      .highlight .ni { color: #f8f8f2 } /* Name.Entity */
+      .highlight .ne { color: #a6e22e } /* Name.Exception */
+      .highlight .function { color: #a6e22e } /* Name.Function nf*/
+      .highlight .nl { color: #f8f8f2 } /* Name.Label */
+      .highlight .nn { color: #f8f8f2 } /* Name.Namespace */
+      .highlight .nx { color: #a6e22e } /* Name.Other */
+      .highlight .py { color: #f8f8f2 } /* Name.Property */
+      .highlight .nt { color: #f92672 } /* Name.Tag */
+      .highlight .nv { color: #f8f8f2 } /* Name.Variable */
+      .highlight .ow { color: #f92672 } /* Operator.Word */
+      .highlight .w { color: #f8f8f2 } /* Text.Whitespace */
+      .highlight .mf { color: #ae81ff } /* Literal.Number.Float */
+      .highlight .mh { color: #ae81ff } /* Literal.Number.Hex */
+      .highlight .mi { color: #ae81ff } /* Literal.Number.Integer */
+      .highlight .mo { color: #ae81ff } /* Literal.Number.Oct */
+      .highlight .sb { color: #e6db74 } /* Literal.String.Backtick */
+      .highlight .sc { color: #e6db74 } /* Literal.String.Char */
+      .highlight .sd { color: #e6db74 } /* Literal.String.Doc */
+      .highlight .s2 { color: #e6db74 } /* Literal.String.Double */
+      .highlight .se { color: #ae81ff } /* Literal.String.Escape */
+      .highlight .sh { color: #e6db74 } /* Literal.String.Heredoc */
+      .highlight .si { color: #e6db74 } /* Literal.String.Interpol */
+      .highlight .sx { color: #e6db74 } /* Literal.String.Other */
+      .highlight .sr { color: #e6db74 } /* Literal.String.Regex */
+      .highlight .s1 { color: #e6db74 } /* Literal.String.Single */
+      .highlight .ss { color: #e6db74 } /* Literal.String.Symbol */
+      .highlight .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+      .highlight .vc { color: #f8f8f2 } /* Name.Variable.Class */
+      .highlight .vg { color: #f8f8f2 } /* Name.Variable.Global */
+      .highlight .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+      .highlight .il { color: #ae81ff } /* Literal.Number.Integer.Long */
+      .highlight .gh { } /* Generic Heading & Diff Header */
+      .highlight .gu { color: #75715e; } /* Generic.Subheading & Diff Unified/Comment? */
+      .highlight .gd { color: #f92672; } /* Generic.Deleted & Diff Deleted */
+      .highlight .gi { color: #a6e22e; } /* Generic.Inserted & Diff Inserted */
+    </style>
+    <script> configObj = { "buttonD": "M8 18.568L10.8 21.333 16 16.198 21.2 21.333 24 18.568 16 10.667z", "buttonT": "translate(-1148 -172) translate(832 140) translate(32 32) translate(284)", "shadowSize": "none", "roundnessSize": "999px", "buttonDToBottom": "64px", "buttonDToRight": "32px", "selectedBackgroundColor": "#c2c0bf", "selectedIconColor": "#a31f34", "buttonWidth": "40px", "buttonHeight": "40px", "svgWidth": "32px", "svgHeight": "32px" }; function createButton(obj, pageSimulator) { const body = document.querySelector("body"); backToTopButton = document.createElement("span"); backToTopButton.classList.add("softr-back-to-top-button"); backToTopButton.id = "softr-back-to-top-button"; pageSimulator ? pageSimulator.appendChild(backToTopButton) : body.appendChild(backToTopButton); backToTopButton.style.width = obj.buttonWidth; backToTopButton.style.height = obj.buttonHeight; backToTopButton.style.marginRight = obj.buttonDToRight; backToTopButton.style.marginBottom = obj.buttonDToBottom; backToTopButton.style.borderRadius = obj.roundnessSize; backToTopButton.style.boxShadow = obj.shadowSize; backToTopButton.style.color = obj.selectedBackgroundColor; backToTopButton.style.backgroundColor = obj.selectedBackgroundColor; pageSimulator ? backToTopButton.style.position = "absolute" : backToTopButton.style.position = "fixed"; backToTopButton.style.outline = "none"; backToTopButton.style.bottom = "0px"; backToTopButton.style.right = "0px"; backToTopButton.style.cursor = "pointer"; backToTopButton.style.textAlign = "center"; backToTopButton.style.border = "solid 2px currentColor"; backToTopButton.innerHTML = '<svg class="back-to-top-button-svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" > <g fill="none" fill-rule="evenodd"> <path d="M0 0H32V32H0z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> <path class="back-to-top-button-img" fill-rule="nonzero" d="M11.384 13.333h9.232c.638 0 .958.68.505 1.079l-4.613 4.07c-.28.246-.736.246-1.016 0l-4.613-4.07c-.453-.399-.133-1.079.505-1.079z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> </g> </svg>'; backToTopButtonSvg = document.querySelector(".back-to-top-button-svg"); backToTopButtonSvg.style.verticalAlign = "middle"; backToTopButtonSvg.style.margin = "auto"; backToTopButtonSvg.style.justifyContent = "center"; backToTopButtonSvg.style.width = obj.svgWidth; backToTopButtonSvg.style.height = obj.svgHeight; backToTopButton.appendChild(backToTopButtonSvg); backToTopButtonImg = document.querySelector(".back-to-top-button-img"); backToTopButtonImg.style.fill = obj.selectedIconColor; backToTopButtonSvg.appendChild(backToTopButtonImg); backToTopButtonImg.setAttribute("d", obj.buttonD); backToTopButtonImg.setAttribute("transform", obj.buttonT); if (!pageSimulator) { backToTopButton.style.display = "none"; window.onscroll = function () { if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) { backToTopButton.style.display = "block"; } else { backToTopButton.style.display = "none"; } }; backToTopButton.onclick = function () { document.body.scrollTop = 0; document.documentElement.scrollTop = 0; }; } }; document.addEventListener("DOMContentLoaded", function () { createButton(configObj, null); });</script>
+  </head>
+  
+  <body class="fixed-top-nav">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Junshen </span>Xu</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">about</a>
+              </li>
+              
+              <!-- Blog -->
+              <li class="nav-item active">
+                <a class="nav-link" href="/blog/">blog<span class="sr-only">(current)</span></a>
+              </li>
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/cv/">cv</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/teaching/">teaching</a>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="post distill">
+
+      <d-title>
+        <h1>GPT-3</h1>
+        <p>Language Models are Few-Shot Learners</p>
+      </d-title>
+
+      <d-byline>
+          <div class="byline grid">
+            <div>
+              <h3>Published</h3>
+                <p>July 22, 2020</p> 
+            </div>
+            
+            <div>
+              <h3>Paper</h3>
+                <p><a href="https://arxiv.org/pdf/2005.14165.pdf" rel="external nofollow noopener" target="_blank">arXiv</a></p> 
+            </div>
+            
+            
+          </div>
+      </d-byline>
+
+      <d-article>
+        <d-contents>
+          <nav class="l-text figcaption">
+          <h3>Contents</h3>
+            <div><a href="#takeaways">Takeaways</a></div>
+            <div><a href="#introduction">Introduction</a></div>
+            <ul>
+              <li><a href="#problems-with-pre-training-fine-tune">Problems with Pre-training + Fine-tune</a></li>
+              <li><a href="#meta-learning">Meta Learning</a></li>
+              <li><a href="#model-scale">Model Scale</a></li>
+              
+            </ul>
+<div><a href="#methods">Methods</a></div>
+            <ul>
+              <li><a href="#different-settings">Different Settings</a></li>
+              <li><a href="#model">Model</a></li>
+              <li><a href="#training-dataset">Training Dataset</a></li>
+              
+            </ul>
+<div><a href="#experiments">Experiments</a></div>
+            <div><a href="#limitations">Limitations</a></div>
+            
+          </nav>
+        </d-contents>
+
+        <h2 id="takeaways">Takeaways</h2>
+
+<ul>
+  <li>Although recent large pre-training models are <strong>task-agnostic in architecture</strong>, they still require <strong>task-specific fine-tuning</strong> datasets of thousands of examples.</li>
+  <li>The author train GPT-3, an autoregressive LM with 175B parameters, and test its performance in the <strong>few-shot</strong> setting, i.e., providing task descriptions and few-shot demonstrations purely via text interaction (prompt), and without any gradient updates.</li>
+  <li>This work shows that scaling up LM greatly improves <strong>task-agnostic</strong>, <strong>few-shot</strong> performance, sometimes even reaching competitiveness with prior SOTA finetuning approaches.</li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The trend of pre-trained language representation NLP</p>
+<ol>
+  <li>single-layer pre-trained word embedding + task-specific architectures</li>
+  <li>multiple layers of representations (e.g. RNN) + task-specific architectures</li>
+  <li>pre-train RNNs or Transformers, and then directly fine-tune, them without task-specific architectures.</li>
+</ol>
+
+<h3 id="problems-with-pre-training--fine-tune">Problems with Pre-training + Fine-tune</h3>
+
+<ul>
+  <li>Although the last paradigm uses <strong>task-agnostic</strong> architectures, they still require <strong>task-specific</strong> fine-tuning.</li>
+  <li>The need for a large dataset of labeled examples for every new task limits the applicability of LMs.</li>
+  <li>The potential to exploit spurious correlations in training data fundamentally grows with the expressiveness of the model and the narrowness of the training distribution.</li>
+  <li>Humans do not require large supervised datasets to learn most language tasks. A brief directive in natural language + a tiny number of examples is often sufficient.</li>
+</ul>
+
+<h3 id="meta-learning">Meta Learning</h3>
+
+<p>In the context of LMs, Meta learning means the model develops a broad set of skills at training time and then uses those abilities at inference time to rapidly adapt to or recognize the desired task.</p>
+
+<p>GPT-2<d-cite key="GPT-2"></d-cite> attempts to do this via what “<em>in-context learning</em>”: the model is conditioned on natural language instruction and/or a few demonstrations of the task.</p>
+
+<p>While it has shown some initial promise, this approach still achieves results far inferior to fine-tuning</p>
+
+<p>This work shows that scaling up language models greatly improves <em>task-agnostic</em>, <em>few-shot</em> performance, sometimes even reaching competitiveness with prior state-of-the-art finetuning approaches.</p>
+
+<h3 id="model-scale">Model Scale</h3>
+
+<table>
+  <tbody>
+    <tr>
+      <td>Model</td>
+      <td>GPT<d-cite key="GPT"></d-cite>
+</td>
+      <td>BERT<d-cite key="BERT"></d-cite>
+</td>
+      <td>GPT-2<d-cite key="GPT-2"></d-cite>
+</td>
+      <td>Megatron-LM<d-cite key="Megatron-LM"></d-cite>
+</td>
+      <td>T5<d-cite key="T5"></d-cite>
+</td>
+      <td>Turing-NLG<d-cite key="Turing-NLG"></d-cite>
+</td>
+    </tr>
+    <tr>
+      <td># of parameters</td>
+      <td>100M</td>
+      <td>300M</td>
+      <td>1.5B</td>
+      <td>8B</td>
+      <td>11B</td>
+      <td>17B</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>There is evidence suggesting that log loss, which correlates well with many downstream tasks, follows a smooth trend of improvement with scale. Since in-context learning involves absorbing many skills and tasks within the parameters of the model, it is plausible that in-context learning abilities might show similarly strong gains with scale.</p>
+
+<p>The authors test this hypothesis by training a <strong>175B</strong> parameter autoregressive language model (GPT-3) and measuring its in-context learning abilities (few-shot, one-shot, and zero-shot).</p>
+
+<h2 id="methods">Methods</h2>
+
+<h3 id="different-settings">Different Settings</h3>
+
+<h4 id="fine-tuning-ft">Fine-Tuning (FT)</h4>
+
+<ul>
+  <li>A pre-trained model by training on a supervised dataset specific to the desired task. Typically thousands to hundreds of thousands of labeled examples are used.</li>
+  <li>
+<em>The main advantage</em> is strong performance on many benchmarks.</li>
+  <li>
+<em>The main disadvantages</em> are the need for a new large dataset for every task, the potential for poor generalization out-of-distribution, and the potential to exploit spurious features of the training data, potentially resulting in an unfair comparison with human performance.</li>
+  <li>In this work, the authors do not fine-tune GPT-3.</li>
+</ul>
+
+<h4 id="few-shot-fs">Few-Shot (FS)</h4>
+
+<ul>
+  <li>Refer to the setting where the model is given a few demonstrations of the task at inference time as conditioning, but no weight updates are allowed.</li>
+  <li>The number of samples \(K\) is in the range of 10 to 100 as this is how many examples can fit in the model’s context window (<code class="language-plaintext highlighter-rouge">nctx = 2048</code>).</li>
+  <li>The main advantages: A major reduction in the need for task-specific data and reduced potential to learn an overly narrow distribution from a large but narrow fine-tuning dataset.</li>
+  <li>The main disadvantage: Results from this method have so far been much worse than SOTA fine-tuned models. Also, a small amount of task-specific data is still required.</li>
+</ul>
+
+<h4 id="one-shot-1s">One-Shot (1S)</h4>
+
+<ul>
+  <li>It is the same as few-shot except that only one demonstration is allowed, in addition to a natural
+language description of the task.</li>
+  <li>The reason to distinguish one-shot from few-shot and zero-shot (below) is that it most closely matches the way in which some tasks are communicated to humans.</li>
+</ul>
+
+<h4 id="zero-shot-0s">Zero-Shot (0S)</h4>
+
+<ul>
+  <li>No demonstrations are allowed, and the model is only given a natural language instruction describing the task.</li>
+  <li>This method provides maximum convenience, potential for robustness, and avoidance of spurious correlations.</li>
+  <li>But it is also the most challenging setting.</li>
+</ul>
+
+<h3 id="model">Model</h3>
+
+<p>The same model and architecture as GPT-2, with the exception that</p>
+
+<ol>
+  <li>GPT-3 uses alternating dense and locally banded sparse attention patterns in the layers of the transformer.</li>
+  <li>To study the dependence of ML performance on model size, 8 different sizes of model were trained, ranging over three orders of magnitude from 125 million parameters to 175 billion parameters, with the last being the model called GPT-3.</li>
+</ol>
+
+<h3 id="training-dataset">Training Dataset</h3>
+
+<p>Unfiltered or lightly filtered versions of Common Crawl tend to have lower quality than more curated datasets. Therefore, the authors took 3 steps to improve the average quality of the datasets:</p>
+
+<ol>
+  <li>Downloaded and filtered a version of CommonCrawl based on similarity to a range of high-quality reference corpora;</li>
+  <li>Performed fuzzy deduplication at the document level, within and across datasets, to prevent redundancy and preserve the integrity of held-out validation set as an accurate measure of overfitting;</li>
+  <li>Added known high-quality reference corpora to the training mix to augment CommonCrawl and increase its diversity.</li>
+</ol>
+
+<p>The overall training dataset has about 500B tokens.</p>
+
+<h2 id="experiments">Experiments</h2>
+
+<h3 id="evaluation">Evaluation</h3>
+
+<p>For few-shot learning, the authors evaluate each example in the evaluation set by randomly drawing \(K\) examples from that task’s training set as conditioning</p>
+
+<h4 id="multiple-choice-problems">Multiple-Choice Problems</h4>
+
+<p>Provide \(K\) examples of context plus correct completion, followed by one example of context only, and compare the LM likelihood of each completion.</p>
+
+<p>For most tasks, the per-token likelihood (to normalize for length) is compared. However, sometime it might be beneficial to normalize by the unconditional probability of each completion, by computing</p>
+
+\[\frac{P(\texttt{completion}|\texttt{context})}{P(\texttt{completion}|\texttt{answer context})},\]
+
+<p>where answer context is the string <code class="language-plaintext highlighter-rouge">"Answer: "</code> or <code class="language-plaintext highlighter-rouge">"A: "</code>.</p>
+
+<h4 id="binary-classification">Binary Classification</h4>
+
+<p>Give the options more semantically meaningful names (e.g. <code class="language-plaintext highlighter-rouge">"True"</code> or <code class="language-plaintext highlighter-rouge">"False"</code> rather than 0 or 1) and then treat the task like multiple choice.</p>
+
+<h4 id="free-form-completion">Free-Form Completion</h4>
+
+<p>Use beam search with a beam width of 4 and a length penalty of \(\alpha = 0.6\).</p>
+
+<h3 id="language-modeling-cloze-and-completion">Language Modeling, Cloze, and Completion</h3>
+
+<h4 id="language-modeling">Language Modeling</h4>
+
+<p>Evaluate the zero-shot GPT-3 by computing the perplexity on the Penn Tree Bank dataset. GPT-3 sets a new SOTA compared to GPT-2.</p>
+
+<h4 id="lambada">LAMBADA</h4>
+
+<p>Task: The model is asked to predict the last word of sentences which requires reading a paragraph of context.</p>
+
+<p>The authors use a fill-in-the-blank format to guide GPT-3 to predict a word rather than other valid continuations of the paragraph:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Alice was friends with Bob. Alice went to visit her friend ___. → Bob
 George bought some baseball equipment, a ball, a glove, and a ___. →
-</code></pre></div></div> <p>Results:</p> <ul> <li>GPT-3 achieves new SOTA on LAMBADA.</li> <li>Few-shot performance improves strongly with model size.</li> <li>The one-shot setting always performs worse than the zero-shot setting.</li> </ul> <h4 id="hellaswag">HellaSwag</h4> <p>Task: Pick the best ending to a story or set of instructions.</p> <p>Results: The performance of GPT-3 on this task is a fair amount lower than the overall SOTA.</p> <h4 id="storycloze">StoryCloze</h4> <p>Task: Select the correct ending sentence for a five-sentence long story.</p> <p>Results: GPT-3 is better than previous zero-shot results but still underperforms fine-tuned SOTA.</p> <h3 id="question-answering">Question Answering</h3> <p><em>open-book QA:</em> use an information retrieval system to find relevant text and train a model to generate an answer given the question and the retrieved text.</p> <p><em>closed-book QA:</em> train a model to answer the questions directly.</p> <p>Results:</p> <ul> <li>Overall, on one of the three datasets GPT-3’s one-shot matches the open-book fine-tuning SOTA.</li> <li>On the other two datasets, it approaches the performance of the closed-book SOTA despite not using fine-tuning.</li> </ul> <h3 id="translation">Translation</h3> <p>For GPT-2 a filter was used on a multilingual collection of documents to produce an English-only dataset due to capacity concerns. Since the capacity increases by over two orders of magnitude from GPT-2 to GPT-3, the scope of the training dataset is also expanded to include more representation of other languages. the majority of the data is derived from raw Common Crawl with only quality-based filtering. Although GPT-3’s training data is still primarily English (93% by word count), it also includes 7% of text in other languages.</p> <p>Zero-shot/one-shot/few-shot GPT-3 underperforms, nears competitive performance, and achieves similar average performance to prior unsupervised NMT work.</p> <p>GPT-3 has a noticeable skew in its performance depending on language direction. GPT-3 significantly outperforms prior unsupervised NMT work when translating into English but underperforms when translating in the other direction.</p> <h3 id="winograd-style-tasks">Winograd-Style Tasks</h3> <p>Task: Determine which word a pronoun refers to, when the pronoun is grammatically ambiguous but semantically unambiguous to a human.</p> <h3 id="common-sense-reasoning">Common Sense Reasoning</h3> <p>Task: Capture physical or scientific reasoning</p> <p>Results: Overall, in-context learning with GPT-3 shows mixed results on commonsense reasoning tasks.</p> <h3 id="reading-comprehension">Reading Comprehension</h3> <p>Results:</p> <ul> <li>A wide spread is observed in GPT-3’s performance across 5 datasets suggestive of varying capability with different answer formats.</li> <li>In general, GPT-3 is on par with initial baselines and early results trained using contextual representations on each respective dataset.</li> </ul> <h3 id="superglue">SuperGLUE</h3> <p>Results: The average performance of few-shot GPT-3 matches that of a fine-tuned BERT model.</p> <h3 id="natural-language-inference">Natural Language Inference</h3> <p>NLI concerns the ability to understand the relationship between two sentences.</p> <p>Task: a two or three class classification problem where the model classifies whether the second sentence logically follows from the first, contradicts the first sentence, or is possibly true (neutral)</p> <p>Results: NLI is still a very difficult task for language models and they are only just beginning to show signs of progress.</p> <h3 id="synthetic-and-qualitative-tasks">Synthetic and Qualitative Tasks</h3> <h4 id="arithmetic">Arithmetic</h4> <p>Results: Overall, GPT-3 displays reasonable proficiency at moderately complex arithmetic in few-shot, one-shot, and even zero-shot settings.</p> <h4 id="word-scrambling-and-manipulation-tasks">Word Scrambling and Manipulation Tasks</h4> <p>Each task involves giving the model a word distorted by some combination of scrambling, addition, or deletion of characters, and asking it to recover the original word.</p> <p>Results:</p> <ul> <li>The one-shot performance is significantly weaker than the few-shot setting.</li> <li>In the zero-shot setting, the model can rarely perform any of the tasks. This suggests that the model really does appear to learn these tasks at test time, as the model cannot perform them zero-shot and their artificial nature makes them unlikely to appear in the pre-training data.</li> </ul> <h4 id="news-article-generation">News Article Generation</h4> <p>Few-shot learning: Provide three previous news articles and the title and subtitle of a proposed next article in the model’s context to condition it.</p> <p>Results:</p> <ul> <li>With prompt, the model is able to reliably generate short articles in the “news” genre.</li> <li>Human abilities to detect model-generated text appear to decrease as model size increases.</li> </ul> <h4 id="learning-and-using-novel-words">Learning and Using Novel Words</h4> <p>Task: using a word in a sentence after seeing it defined only once.</p> <p>Results: Overall, GPT-3 appears to be at least proficient at the task of using novel words in a sentence.</p> <h4 id="correcting-english-grammar">Correcting English Grammar</h4> <p>Prompt: <code class="language-plaintext highlighter-rouge">Poor English Input: &lt;sentence&gt;\n Good English Output: &lt;sentence&gt;</code>.</p> <h2 id="limitations">Limitations</h2> <ul> <li>Despite the strong quantitative and qualitative improvements of GPT-3, it still has notable weaknesses in text synthesis and several NLP tasks</li> <li>GPT-3 has several structural and algorithmic limitations: do not include any bidirectional architectures or other training objectives such as denoising.</li> <li>Scaling up any LM-like model may eventually run into (or could already be running into) the limits of the pretraining objective.</li> <li>Poor sample efficiency during pre-training.</li> <li>Ambiguity about whether few-shot learning actually learns new tasks “from scratch” at inference time, or if it simply recognizes and identifies tasks that it has learned during training.</li> </ul> </d-article> <d-appendix> <d-footnote-list></d-footnote-list> <d-citation-list></d-citation-list> </d-appendix> <d-bibliography src="/assets/bibliography/paper-notes.bib"></d-bibliography> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2023 Junshen Xu. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. Last updated: May 06, 2023. </div> </footer> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script async src="https://www.googletagmanager.com/gtag/js?id=G-NYJ88YK0VS"></script> <script>function gtag(){window.dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-NYJ88YK0VS");</script> <script type="text/javascript">function progressBarSetup(){"max"in document.createElement("progress")?(initializeProgressElement(),$(document).on("scroll",function(){progressBar.attr({value:getCurrentScrollPosition()})}),$(window).on("resize",initializeProgressElement)):(resizeProgressBar(),$(document).on("scroll",resizeProgressBar),$(window).on("resize",resizeProgressBar))}function getCurrentScrollPosition(){return $(window).scrollTop()}function initializeProgressElement(){let e=$("#navbar").outerHeight(!0);$("body").css({"padding-top":e}),$("progress-container").css({"padding-top":e}),progressBar.css({top:e}),progressBar.attr({max:getDistanceToScroll(),value:getCurrentScrollPosition()})}function getDistanceToScroll(){return $(document).height()-$(window).height()}function resizeProgressBar(){progressBar.css({width:getWidthPercentage()+"%"})}function getWidthPercentage(){return getCurrentScrollPosition()/getDistanceToScroll()*100}const progressBar=$("#progress");window.onload=function(){setTimeout(progressBarSetup,50)};</script> </body> </html>
+</code></pre></div></div>
+
+<p>Results:</p>
+
+<ul>
+  <li>GPT-3 achieves new SOTA on LAMBADA.</li>
+  <li>Few-shot performance improves strongly with model size.</li>
+  <li>The one-shot setting always performs worse than the zero-shot setting.</li>
+</ul>
+
+<h4 id="hellaswag">HellaSwag</h4>
+
+<p>Task: Pick the best ending to a story or set of instructions.</p>
+
+<p>Results: The performance of GPT-3 on this task is a fair amount lower than the overall SOTA.</p>
+
+<h4 id="storycloze">StoryCloze</h4>
+
+<p>Task: Select the correct ending sentence for a five-sentence long story.</p>
+
+<p>Results: GPT-3 is better than previous zero-shot results but still underperforms fine-tuned SOTA.</p>
+
+<h3 id="question-answering">Question Answering</h3>
+
+<p><em>open-book QA:</em> use an information retrieval system to find relevant text and train a model to generate an answer given the question and the retrieved text.</p>
+
+<p><em>closed-book QA:</em> train a model to answer the questions directly.</p>
+
+<p>Results:</p>
+
+<ul>
+  <li>Overall, on one of the three datasets GPT-3’s one-shot matches the open-book fine-tuning SOTA.</li>
+  <li>On the other two datasets, it approaches the performance of the closed-book SOTA despite not using fine-tuning.</li>
+</ul>
+
+<h3 id="translation">Translation</h3>
+
+<p>For GPT-2 a filter was used on a multilingual collection of documents to produce an English-only dataset due to capacity concerns. Since the capacity increases by over two orders of magnitude from GPT-2 to GPT-3, the scope of the training dataset is also expanded to include more representation of other languages. the majority of the data is derived from raw Common Crawl with only quality-based filtering. Although GPT-3’s training data is still primarily English (93% by word count), it also includes 7% of text in other languages.</p>
+
+<p>Zero-shot/one-shot/few-shot GPT-3 underperforms, nears competitive performance, and achieves similar average performance to prior unsupervised NMT work.</p>
+
+<p>GPT-3 has a noticeable skew in its performance depending on language direction. GPT-3 significantly outperforms prior unsupervised NMT work when translating into English but underperforms when translating in the other direction.</p>
+
+<h3 id="winograd-style-tasks">Winograd-Style Tasks</h3>
+
+<p>Task: Determine which word a pronoun refers to, when the pronoun is grammatically ambiguous but semantically unambiguous to a human.</p>
+
+<h3 id="common-sense-reasoning">Common Sense Reasoning</h3>
+
+<p>Task: Capture physical or scientific reasoning</p>
+
+<p>Results: Overall, in-context learning with GPT-3 shows mixed results on commonsense reasoning tasks.</p>
+
+<h3 id="reading-comprehension">Reading Comprehension</h3>
+
+<p>Results:</p>
+
+<ul>
+  <li>A wide spread is observed in GPT-3’s performance across 5 datasets suggestive of varying capability with different answer formats.</li>
+  <li>In general, GPT-3 is on par with initial baselines and early results trained using contextual representations on each respective dataset.</li>
+</ul>
+
+<h3 id="superglue">SuperGLUE</h3>
+
+<p>Results: The average performance of few-shot GPT-3 matches that of a fine-tuned BERT model.</p>
+
+<h3 id="natural-language-inference">Natural Language Inference</h3>
+
+<p>NLI concerns the ability to understand the relationship between two sentences.</p>
+
+<p>Task: a two or three class classification problem where the model classifies whether the second sentence logically follows from the first, contradicts the first sentence, or is possibly true (neutral)</p>
+
+<p>Results: NLI is still a very difficult task for language models and they are only just beginning to show signs of progress.</p>
+
+<h3 id="synthetic-and-qualitative-tasks">Synthetic and Qualitative Tasks</h3>
+
+<h4 id="arithmetic">Arithmetic</h4>
+
+<p>Results: Overall, GPT-3 displays reasonable proficiency at moderately complex arithmetic in few-shot, one-shot, and even zero-shot settings.</p>
+
+<h4 id="word-scrambling-and-manipulation-tasks">Word Scrambling and Manipulation Tasks</h4>
+
+<p>Each task involves giving the model a word distorted by some combination of scrambling, addition, or deletion of characters, and asking it to recover the original word.</p>
+
+<p>Results:</p>
+
+<ul>
+  <li>The one-shot performance is significantly weaker than the few-shot setting.</li>
+  <li>In the zero-shot setting, the model can rarely perform any of the tasks. This suggests that the model really does appear to learn these tasks at test time, as the model cannot perform them zero-shot and their artificial nature makes them unlikely to appear in the pre-training data.</li>
+</ul>
+
+<h4 id="news-article-generation">News Article Generation</h4>
+
+<p>Few-shot learning: Provide three previous news articles and the title and subtitle of a proposed next article in the model’s context to condition it.</p>
+
+<p>Results:</p>
+
+<ul>
+  <li>With prompt, the model is able to reliably generate short articles in the “news” genre.</li>
+  <li>Human abilities to detect model-generated text appear to decrease as model size increases.</li>
+</ul>
+
+<h4 id="learning-and-using-novel-words">Learning and Using Novel Words</h4>
+
+<p>Task: using a word in a sentence after seeing it defined only once.</p>
+
+<p>Results: Overall, GPT-3 appears to be at least proficient at the task of using novel words in a sentence.</p>
+
+<h4 id="correcting-english-grammar">Correcting English Grammar</h4>
+
+<p>Prompt: <code class="language-plaintext highlighter-rouge">Poor English Input: &lt;sentence&gt;\n Good English Output: &lt;sentence&gt;</code>.</p>
+
+<h2 id="limitations">Limitations</h2>
+
+<ul>
+  <li>Despite the strong quantitative and qualitative improvements of GPT-3, it still has notable weaknesses in text synthesis and several NLP tasks</li>
+  <li>GPT-3 has several structural and algorithmic limitations: do not include any bidirectional architectures or other training objectives such as denoising.</li>
+  <li>Scaling up any LM-like model may eventually run into (or could already be running into) the limits of the pretraining objective.</li>
+  <li>Poor sample efficiency during pre-training.</li>
+  <li>Ambiguity about whether few-shot learning actually learns new tasks “from scratch” at inference time, or if it simply recognizes and identifies tasks that it has learned during training.</li>
+</ul>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+      <d-bibliography src="/assets/bibliography/paper-notes.bib"></d-bibliography>
+    </div>
+
+    <!-- Footer -->    
+    <footer class="fixed-bottom">
+      <div class="container mt-0">
+        © Copyright 2023 Junshen  Xu. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>.
+Last updated: May 06, 2023.
+      </div>
+    </footer>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NYJ88YK0VS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ window.dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-NYJ88YK0VS');
+  </script>
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+  </body>
+</html>

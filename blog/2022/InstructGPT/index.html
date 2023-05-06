@@ -1,1 +1,741 @@
-<!DOCTYPE html> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta name="google-site-verification" content="MARJu3erA7Z6jybcmR5fgSNRNtCNYMAYkk0jidGGr8A"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>InstructGPT | Junshen Xu</title> <meta name="author" content="Junshen Xu"> <meta name="description" content="Training language models to follow instructions with human feedback"> <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website"> <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CRoboto+Slab:100,300,400,500,700%7CMaterial+Icons"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="/assets/img/favicon_v2.ico"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="https://daviddmc.github.io/blog/2022/InstructGPT/"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark"> <script src="/assets/js/theme.js"></script> <script src="/assets/js/dark_mode.js"></script> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script src="/assets/js/distillpub/template.v2.js"></script> <script src="/assets/js/distillpub/transforms.v2.js"></script> <script src="/assets/js/distillpub/overrides.js"></script> <style type="text/css">.highlight pre:not(.language-text){background-color:#272822;color:#f8f8f2}.highlight .hll{background-color:#272822}.highlight .comment{color:#75715e}.highlight .err{color:#960050;background-color:#1e0010}.highlight .keyword{color:#66d9ef}.highlight .l{color:#ae81ff}.highlight .n{color:#f8f8f2}.highlight .operator{color:#f92672}.highlight .punctuation{color:#f8f8f2}.highlight .cm{color:#75715e}.highlight .cp{color:#75715e}.highlight .c1{color:#75715e}.highlight .cs{color:#75715e}.highlight .ge{font-style:italic}.highlight .gs{font-weight:bold}.highlight .kc{color:#66d9ef}.highlight .kd{color:#66d9ef}.highlight .kn{color:#f92672}.highlight .kp{color:#66d9ef}.highlight .kr{color:#66d9ef}.highlight .kt{color:#66d9ef}.highlight .ld{color:#e6db74}.highlight .number{color:#ae81ff}.highlight .string{color:#e6db74}.highlight .na{color:#a6e22e}.highlight .builtin{color:#f8f8f2}.highlight .class-name{color:#a6e22e}.highlight .no{color:#66d9ef}.highlight .decorator{color:#a6e22e}.highlight .ni{color:#f8f8f2}.highlight .ne{color:#a6e22e}.highlight .function{color:#a6e22e}.highlight .nl{color:#f8f8f2}.highlight .nn{color:#f8f8f2}.highlight .nx{color:#a6e22e}.highlight .py{color:#f8f8f2}.highlight .nt{color:#f92672}.highlight .nv{color:#f8f8f2}.highlight .ow{color:#f92672}.highlight .w{color:#f8f8f2}.highlight .mf{color:#ae81ff}.highlight .mh{color:#ae81ff}.highlight .mi{color:#ae81ff}.highlight .mo{color:#ae81ff}.highlight .sb{color:#e6db74}.highlight .sc{color:#e6db74}.highlight .sd{color:#e6db74}.highlight .s2{color:#e6db74}.highlight .se{color:#ae81ff}.highlight .sh{color:#e6db74}.highlight .si{color:#e6db74}.highlight .sx{color:#e6db74}.highlight .sr{color:#e6db74}.highlight .s1{color:#e6db74}.highlight .ss{color:#e6db74}.highlight .bp{color:#f8f8f2}.highlight .vc{color:#f8f8f2}.highlight .vg{color:#f8f8f2}.highlight .vi{color:#f8f8f2}.highlight .il{color:#ae81ff}.highlight .gu{color:#75715e}.highlight .gd{color:#f92672}.highlight .gi{color:#a6e22e}</style> <script>function createButton(t,o){const n=document.querySelector("body");backToTopButton=document.createElement("span"),backToTopButton.classList.add("softr-back-to-top-button"),backToTopButton.id="softr-back-to-top-button",o?o.appendChild(backToTopButton):n.appendChild(backToTopButton),backToTopButton.style.width=t.buttonWidth,backToTopButton.style.height=t.buttonHeight,backToTopButton.style.marginRight=t.buttonDToRight,backToTopButton.style.marginBottom=t.buttonDToBottom,backToTopButton.style.borderRadius=t.roundnessSize,backToTopButton.style.boxShadow=t.shadowSize,backToTopButton.style.color=t.selectedBackgroundColor,backToTopButton.style.backgroundColor=t.selectedBackgroundColor,backToTopButton.style.position=o?"absolute":"fixed",backToTopButton.style.outline="none",backToTopButton.style.bottom="0px",backToTopButton.style.right="0px",backToTopButton.style.cursor="pointer",backToTopButton.style.textAlign="center",backToTopButton.style.border="solid 2px currentColor",backToTopButton.innerHTML='<svg class="back-to-top-button-svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" > <g fill="none" fill-rule="evenodd"> <path d="M0 0H32V32H0z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> <path class="back-to-top-button-img" fill-rule="nonzero" d="M11.384 13.333h9.232c.638 0 .958.68.505 1.079l-4.613 4.07c-.28.246-.736.246-1.016 0l-4.613-4.07c-.453-.399-.133-1.079.505-1.079z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> </g> </svg>',backToTopButtonSvg=document.querySelector(".back-to-top-button-svg"),backToTopButtonSvg.style.verticalAlign="middle",backToTopButtonSvg.style.margin="auto",backToTopButtonSvg.style.justifyContent="center",backToTopButtonSvg.style.width=t.svgWidth,backToTopButtonSvg.style.height=t.svgHeight,backToTopButton.appendChild(backToTopButtonSvg),backToTopButtonImg=document.querySelector(".back-to-top-button-img"),backToTopButtonImg.style.fill=t.selectedIconColor,backToTopButtonSvg.appendChild(backToTopButtonImg),backToTopButtonImg.setAttribute("d",t.buttonD),backToTopButtonImg.setAttribute("transform",t.buttonT),o||(backToTopButton.style.display="none",window.onscroll=function(){document.body.scrollTop>20||document.documentElement.scrollTop>20?backToTopButton.style.display="block":backToTopButton.style.display="none"},backToTopButton.onclick=function(){document.body.scrollTop=0,document.documentElement.scrollTop=0})}configObj={buttonD:"M8 18.568L10.8 21.333 16 16.198 21.2 21.333 24 18.568 16 10.667z",buttonT:"translate(-1148 -172) translate(832 140) translate(32 32) translate(284)",shadowSize:"none",roundnessSize:"999px",buttonDToBottom:"64px",buttonDToRight:"32px",selectedBackgroundColor:"#c2c0bf",selectedIconColor:"#a31f34",buttonWidth:"40px",buttonHeight:"40px",svgWidth:"32px",svgHeight:"32px"},document.addEventListener("DOMContentLoaded",function(){createButton(configObj,null)});</script> </head> <body class="fixed-top-nav"> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Junshen </span>Xu</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about</a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">blog<span class="sr-only">(current)</span></a> </li> <li class="nav-item "> <a class="nav-link" href="/publications/">publications</a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">cv</a> </li> <li class="nav-item "> <a class="nav-link" href="/teaching/">teaching</a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="post distill"> <d-title> <h1>InstructGPT</h1> <p>Training language models to follow instructions with human feedback</p> </d-title> <d-byline> <div class="byline grid"> <div> <h3>Published</h3> <p>January 27, 2022</p> </div> <div> <h3>Paper</h3> <p><a href="https://arxiv.org/pdf/2203.02155.pdf" rel="external nofollow noopener" target="_blank">arXiv</a></p> </div> </div> </d-byline> <d-article> <d-contents> <nav class="l-text figcaption"> <h3>Contents</h3> <div><a href="#takeaways">Takeaways</a></div> <div><a href="#introduction">Introduction</a></div> <div><a href="#methods">Methods</a></div> <ul> <li><a href="#high-level-methodology">High-Level Methodology</a></li> <li><a href="#dataset">Dataset</a></li> <li><a href="#models">Models</a></li> </ul> <div><a href="#experiments">Experiments</a></div> <ul> <li><a href="#evaluation">Evaluation</a></li> <li><a href="#results-on-the-api-distribution">Results on the API Distribution</a></li> <li><a href="#results-on-public-nlp-datasets">Results on Public NLP Datasets</a></li> <li><a href="#qualitative-results">Qualitative results</a></li> </ul> <div><a href="#discussion">Discussion</a></div> <ul> <li><a href="#implications-for-alignment-research">Implications for Alignment Research</a></li> <li><a href="#who-are-we-aligning-to">Who are We Aligning to?</a></li> <li><a href="#limitations">Limitations</a></li> <li><a href="#open-questions">Open Questions</a></li> </ul> </nav> </d-contents> <h2 id="takeaways">Takeaways</h2> <ul> <li>Making LMs bigger does not inherently make them better at following a user’s intent.</li> <li>Reinforcement learning from human feedback (<strong>RLHF</strong>) is a promising direction for aligning LM with user intent.</li> <li>Outputs from the 1.3B InstructGPT model are preferred by humans to outputs from the 175B GPT-3, despite having 100x fewer parameters.</li> <li>InstructGPT shows improvements in truthfulness and reductions in toxic output generation while having minimal performance regressions on public NLP datasets.</li> </ul> <h2 id="introduction">Introduction</h2> <p>Making LMs bigger does not inherently make them better at following a user’s intent, i.e., not <em>aligned</em> with their users.</p> <p>The model may generate outputs that are untruthful, toxic, or not helpful.</p> <p>This is because the LM objective used for many recent large LMs, i.e., predicting the next token on a webpage from the internet, is different from the objective “follow the user’s instructions helpfully and safely”.</p> <p>Ideas:</p> <ul> <li>Aligning language models with user intent on a wide range of tasks by fine-tuning with human feedback.</li> <li>Use reinforcement learning from human feedback (<strong>RLHF</strong>) to fine-tune GPT-3<d-cite key="GPT-3"></d-cite> to follow a broad class of written instructions.</li> <li>This technique uses human preferences as a reward signal to fine-tune the models.</li> </ul> <p>Main Findings:</p> <ul> <li>Labelers significantly prefer InstructGPT outputs over outputs from GPT-3</li> <li>InstructGPT generalizes to the preferences of “held-out” labelers.</li> <li>Public NLP datasets are not reflective of how our language models are used.</li> <li>InstructGPT models show improvements in truthfulness over GPT-3.</li> <li>InstructGPT shows small improvements in toxicity over GPT-3, but not bias.</li> <li>The performance regressions on public NLP datasets can be minimized by modifying the RLHF fine-tuning procedure.</li> <li>InstructGPT shows promising generalization to instructions outside of the RLHF finetuning distribution.</li> <li>InstructGPT still makes simple mistakes.</li> </ul> <h2 id="methods">Methods</h2> <h3 id="high-level-methodology">High-Level Methodology</h3> <ol> <li>Collect demonstration data, and train a supervised policy (supervised fine-tune, <strong>SFT</strong>).</li> <li>Collect comparison data, and train a reward model (<strong>RM</strong>).</li> <li>Optimize a policy against the reward model using <strong>PPO</strong>.</li> </ol> <p>Steps 2 and 3 can be iterated continuously.</p> <div class="l-page" style="text-align:center;"> <img src="https://cdn.openai.com/instruction-following/draft-20220126f/methods.svg" width="100%" style="margin-bottom: 12px; background-color: white;"> <p></p> </div> <h3 id="dataset">Dataset</h3> <h4 id="prompt-dataset">Prompt Dataset</h4> <ul> <li>Use text prompts submitted to the OpenAI API, specifically those using <em>an earlier version of the InstructGPT models</em>.</li> <li>Deduplicate prompts by checking for prompts that share a long common prefix.</li> <li>Limit the number of prompts to 200 per user ID.</li> <li>Create the train, validation, and test splits based on <em>user ID</em>.</li> <li>Filter all prompts in the training split for personally identifiable information.</li> </ul> <p>For each prompt, the task can be</p> <ul> <li>a natural language instruction (e.g. “Write a story about a wise frog”),</li> <li>few-shot examples (e.g. giving two examples of frog stories, and prompting the model to generate a new one)</li> <li>an implicit continuation (e.g. providing the start of a story about a frog).</li> </ul> <h4 id="train-the-very-first-instructgpt">Train the Very First InstructGPT</h4> <p>To train the very first InstructGPT models, the authors asked labelers to <em>write prompts themselves</em>. This is because an initial source of instruction-like prompts is needed to bootstrap the process and these kinds of prompts weren’t often submitted to the regular GPT-3 models on the API.</p> <p>Three kinds of prompts were written by the labelers:</p> <ul> <li>Plain: an arbitrary task, while ensuring the tasks had sufficient diversity.</li> <li>Few-shot: an instruction, and multiple query/response pairs for that instruction.</li> <li>User-based: a prompt corresponding to the use cases stated in waitlist applications to the OpenAI API.</li> </ul> <h4 id="datasets-for-fine-tuning">Datasets for Fine-Tuning</h4> <p>Three different datasets used in the fine-tuning procedure are built from the prompt dataset.</p> <ol> <li> <strong>SFT:</strong> A prompt is sampled from the prompt dataset, and a labeler writes an answer to this prompt, supervised learning (13k prompts)</li> <li> <strong>RM:</strong> A prompt and several model outputs are sampled, and a labeler ranks the outputs from the best to worst. This data is used to train the reward model. (33k prompts)</li> <li> <strong>PPO:</strong> Another prompt dataset from the API. This data is used to train PPO with the RM. (31k prompts)</li> </ol> <h4 id="human-data-collection">Human Data Collection</h4> <p>Hired a team of about 40 labelers.</p> <p>During training and evaluation, the alignment criteria may come into conflict.</p> <ul> <li>During training helpfulness to the user is prioritized</li> <li>In the final evaluation truthfulness and harmlessness are prioritized.</li> </ul> <h3 id="models">Models</h3> <h4 id="sft">SFT</h4> <ul> <li>Fine-tune GPT-3 on the labeler demonstrations using supervised learning.</li> <li>Select the final SFT model based on the RM score on the validation set.</li> </ul> <h4 id="rm">RM</h4> <ul> <li>Start from the SFT model with the final unembedding layer removed.</li> <li>Train a model to take in a prompt and response, and output a scalar reward.</li> </ul> <p>Model size: The 6B RMs are used because they save computation and the training of 175B RM could be unstable.</p> <p>Loss function:</p> \[L(\theta)=-\frac{1}{K \choose 2}\mathbb{E}_{(x,y_w,y_l)\sim D}[\log(\sigma(r_\theta(x,y_w)- r_\theta(x,y_l)))],\] <p>where \(r_\theta(x,y)\) is the score outputed by the RM for prompt \(x\) and completion \(y\) with parameters \(\theta\), \(y_w\) is the preferred completion out of the pair of \(y_w\) and \(y_l\), and \(D\) is the dataset of human comparisons.</p> <h4 id="rl">RL</h4> <p>Fine-tune the SFT model using PPO.</p> <p>The environment is a bandit environment that presents a random customer prompt and expects a response to the prompt. Given the prompt and response, it produces a reward determined by the reward model and ends the episode.</p> <p>In addition, a per-token KL penalty from the SFT model is added at each token to mitigate overoptimization of the reward model.</p> <p>The value function is initialized from the RM.</p> <p>An improved algorithm: <strong>PPO-ptx</strong></p> <ul> <li>Mixing the pretraining gradients into the PPO gradients.</li> <li> <p>Maximize the following combined objective function in RL training</p> \[\mathbb{E}_{(x,y)\sim D_{\pi_{\phi}^\text{RL}}}[r_{\theta}(x,y)-\beta\log(\pi_\phi^\text{RL}(y|x)/\pi^\text{SFT}(y|x))]+\gamma \mathbb{E}_{x\sim D_\text{pretrain}}[\log(\pi_\phi^\text{RL}(x))],\] <p>where \(\pi_\phi^\text{RL}\) is the learned RL policy, \(\pi^\text{SFT}\) is the supervised trained model, and \(D_\text{pretrain}\) is the pretraining distribution.</p> </li> <li>Falling back into PPO when \(\gamma=0\).</li> </ul> <h4 id="baselines">Baselines</h4> <ul> <li>GPT-3</li> <li>GPT-3-prompted: provide a few-shot prefix to “prompt” GPT-3 into an instruction-following mode</li> <li>GPT-3-FT: fine-tune GPT-3 on a variety of NLP tasks</li> </ul> <h2 id="experiments">Experiments</h2> <h3 id="evaluation">Evaluation</h3> <h4 id="definition-of-alignment">Definition of Alignment</h4> <ul> <li> <strong>Helpfulness:</strong> <ul> <li>The model should follow instructions, but also infer intention from a few-shot prompt or another interpretable pattern.</li> <li>The main metric is labeler preference ratings.</li> <li>However, since the labelers are not the users who generated the prompts, there could be a divergence between what a user actually intended and what the labeler thought was intended from only reading the prompt.</li> </ul> </li> <li> <strong>Truthfulness (honesty):</strong> <ul> <li>Whether the model’s statements about the world are true.</li> <li>Evaluate the model’s tendency to make up information on closed-domain tasks (“hallucinations”)</li> <li>Use the TruthfulQA dataset.</li> </ul> </li> <li> <strong>Harmlessness:</strong> <ul> <li>The harms from language models depend on how their outputs are used in the real world.</li> <li>The labelers evaluate whether the output is inappropriate in the context of a customer assistant, denigrates a protected class, or contains.</li> <li>Benchmark the models on datasets intended to measure bias and toxicity.</li> </ul> </li> </ul> <h4 id="evaluations-on-api-distribution">Evaluations on API Distribution</h4> <p>The main metric is <em>human preference ratings</em> on a held-out set of prompts from the same source as the training distribution.</p> <ul> <li>How often the model’s outputs are preferred to a baseline policy (175B SFT model)?</li> <li>The overall quality of each response on a 1-7 Likert scale (given by the labelers).</li> </ul> <h4 id="evaluations-on-public-nlp-datasets">Evaluations on Public NLP Datasets</h4> <ul> <li>Datasets that capture an aspect of LM safety, particularly truthfulness, toxicity, and bias.</li> <li>Datasets that capture zero-shot performance on traditional NLP tasks, e.g., <ul> <li>question answering,</li> <li>reading comprehension,</li> <li>summarization.</li> </ul> </li> <li>The RealToxicityPrompts dataset for human evaluations of toxicity.</li> </ul> <h3 id="results-on-the-api-distribution">Results on the API Distribution</h3> <ul> <li> <strong>Labelers significantly prefer InstructGPT outputs over outputs from GPT-3.</strong> <ul> <li>Preference order: PPO-ptx ~ PPO &gt; SFT &gt; GPT-3 (prompted) &gt; GPT-3</li> <li>Outputs from the 1.3B InstructGPT are preferred to outputs from the 175B GPT-3, despite having 100x fewer parameters.</li> <li>Results do not change significantly when evaluated on prompts submitted to GPT-3 models on the API.</li> <li>InstructGPT outperforms GPT along several more concrete axes: <ol> <li>“Attempts correct instruction”</li> <li>“Follows explicit constraints”</li> <li>“Hallucinations”: making up facts</li> <li>“Uses language appropriate for customer assistant”</li> </ol> </li> </ul> </li> <li> <strong>InstructGPT generalizes to the preferences of “held-out” labelers.</strong> <ul> <li>Held-out labelers (who did not produce any training data) have similar ranking preferences as workers who produce training data.</li> </ul> </li> <li> <strong>Public NLP datasets are not reflective of how our language models are used.</strong> <ul> <li>Fine-tune GPT-3 on a variety of NLP tasks (GPT-3-FT)</li> <li>Likert scores ranking: PPO-ptx &gt; SFT &gt; GPT-3 (prompted) ~ GPT-3-FT &gt; GPT-3</li> <li>InstructGPT model outperforms GPT-3-FT for two reasons. <ol> <li>Public NLP datasets are designed to capture tasks that are easy to evaluate with automatic metrics, whereas more than half of the prompts in the API distribution are open-ended generation and brainstorming.</li> <li>It can be difficult for public NLP datasets to obtain a very high diversity of inputs.</li> </ol> </li> </ul> </li> </ul> <h3 id="results-on-public-nlp-datasets">Results on Public NLP Datasets</h3> <ul> <li> <strong>InstructGPT models show improvements in truthfulness over GPT-3.</strong> <ul> <li>InstructGPT generates truthful and informative answers more often than GPT-3.</li> <li>InstructGPT does not have to be specifically instructed to tell the truth to exhibit improved truthfulness.</li> <li>InstructGPT hallucinate (i.e. fabricate information) less often than GPT-3 on closed-domain tasks from our API distribution.</li> </ul> </li> <li> <strong>InstructGPT shows small improvements in toxicity over GPT-3, but not bias.</strong> <ul> <li>Obtain automatic toxicity scores of models outputs using <a href="https://www.perspectiveapi.com" rel="external nofollow noopener" target="_blank">the Perspective API</a> </li> <li>Human evaluation: absolute toxicity, toxicity relative to the prompt, continuity, and overall output preference.</li> <li>When instructed to produce a safe and respectful output, InstructGPT models generate less toxic outputs than those from GPT-3. This advantage disappears when the respectful prompt is removed.</li> <li>When explicitly prompted to produce a toxic output, InstructGPT outputs are much more toxic than those from GPT-3.</li> <li>In terms of the propensity to generate biased speech, InstructGPT is <em>not</em> less biased than GPT-3. But when instructed to act respectfully InstructGPT exhibits higher bias.</li> </ul> </li> <li> <strong>The performance regressions on public NLP datasets can be minimized by modifying the RLHF fine-tuning procedure.</strong> <ul> <li>InstructGPT (PPO model trained on the API distribution) suffers from performance regressions on several public NLP datasets (alignment tax).</li> <li>Adding pretraining updates (PPO-ptx) mitigates these performance regressions on all datasets.</li> <li>Mixing in pretraining updates performs better than the simpler solution of increasing the KL coefficient.</li> </ul> </li> </ul> <h3 id="qualitative-results">Qualitative results</h3> <ul> <li> <strong>InstructGPT shows promising generalization to instructions outside of the RLHF finetuning distribution.</strong> <ul> <li>InstructGPT shows the ability to follow instructions in non-English languages, and perform summarization and question-answering for code, although non-English languages and code form a tiny minority of the fine-tuning data.</li> </ul> </li> <li> <strong>InstructGPT still makes simple mistakes.</strong> <ul> <li>When given an instruction with a false premise, the model sometimes incorrectly assumes the premise is true.</li> <li>The model can overly hedge; when given a simple question, it can sometimes say that there is no one answer to the question and give multiple possible answers, even when there is one fairly clear answer from the context.</li> <li>The model’s performance degrades when instructions contain multiple explicit constraints or when constraints can be challenging for language models.</li> </ul> </li> </ul> <h2 id="discussion">Discussion</h2> <h3 id="implications-for-alignment-research">Implications for Alignment Research</h3> <p>This research is part of a broader research program to align AI systems with human intentions.</p> <p>Lessons for alignment research more generally:</p> <ul> <li>The cost of increasing model alignment is modest relative to pretraining.</li> <li>There is some evidence that InstructGPT generalizes “following instructions” to settings that people don’t supervise it in.</li> <li>Most of the performance degradations introduced by the fine-tuning can be mitigated.</li> <li>This work has validated alignment techniques from research in the real world.</li> </ul> <h3 id="who-are-we-aligning-to">Who are We Aligning to?</h3> <p>Factors that influence the fine-tuning data that ultimately determine what and who the models are aligning to.</p> <ul> <li>Aligning to demonstrations and preferences provided by our training labelers.</li> <li>Aligning to the preferences of the researchers who designed this study.</li> <li>Aligning to what customers think is valuable and what their end-users think is valuable to currently use the API for.</li> </ul> <h3 id="limitations">Limitations</h3> <h4 id="limitations-of-methodology">Limitations of Methodology</h4> <ul> <li>The behavior of InstructGPT models is determined in part by the human feedback obtained from the labelers.</li> <li>Some of the labeling tasks rely on value judgments that may be impacted by the identity of the labelers.</li> <li>Most comparisons are only labeled by 1 labeler for cost reasons.</li> </ul> <h4 id="limitations-of-models">Limitations of Models</h4> <ul> <li>The models are neither fully aligned nor fully safe: still generate toxic or biased outputs, make up facts, and generate sexual and violent content without explicit prompting.</li> <li>The model also fails to generate reasonable outputs on some inputs.</li> <li>In most cases, the model follows the user’s instruction, even if that could lead to harm in the real world.</li> </ul> <h3 id="open-questions">Open Questions</h3> <ul> <li>Further decrease the models’ propensity to generate toxic, biased, or otherwise harmful outputs.</li> <li>Training the model to be harmless despite user instructions is important but is also difficult because whether an output is harmful depends on the context in which it’s deployed.</li> <li>A promising future path is combining RLHF with other methods of steerability.</li> <li>In addition to RLHF, there are many other algorithms that could be used to train policies on the demonstration and comparison data to get even better results.</li> <li>Comparisons are not necessarily the most efficient way of providing an alignment signal.</li> <li>The proposal for mitigating the alignment tax, by incorporating pretraining data into RLHF finetuning (PPO-ptx), does not completely mitigate performance regressions and may make certain undesirable behaviors more likely for some tasks.</li> <li>A principle-based approach to alignment, i,e, identifying “fair principles” for alignment.</li> </ul> </d-article> <d-appendix> <d-footnote-list></d-footnote-list> <d-citation-list></d-citation-list> </d-appendix> <d-bibliography src="/assets/bibliography/paper-notes.bib"></d-bibliography> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2023 Junshen Xu. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. Last updated: May 06, 2023. </div> </footer> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script async src="https://www.googletagmanager.com/gtag/js?id=G-NYJ88YK0VS"></script> <script>function gtag(){window.dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-NYJ88YK0VS");</script> <script type="text/javascript">function progressBarSetup(){"max"in document.createElement("progress")?(initializeProgressElement(),$(document).on("scroll",function(){progressBar.attr({value:getCurrentScrollPosition()})}),$(window).on("resize",initializeProgressElement)):(resizeProgressBar(),$(document).on("scroll",resizeProgressBar),$(window).on("resize",resizeProgressBar))}function getCurrentScrollPosition(){return $(window).scrollTop()}function initializeProgressElement(){let e=$("#navbar").outerHeight(!0);$("body").css({"padding-top":e}),$("progress-container").css({"padding-top":e}),progressBar.css({top:e}),progressBar.attr({max:getDistanceToScroll(),value:getCurrentScrollPosition()})}function getDistanceToScroll(){return $(document).height()-$(window).height()}function resizeProgressBar(){progressBar.css({width:getWidthPercentage()+"%"})}function getWidthPercentage(){return getCurrentScrollPosition()/getDistanceToScroll()*100}const progressBar=$("#progress");window.onload=function(){setTimeout(progressBarSetup,50)};</script> </body> </html>
+<!DOCTYPE html>
+<!-- _layouts/paper-note.html --><html>
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+    <!-- Website verification -->
+    <meta name="google-site-verification" content="MARJu3erA7Z6jybcmR5fgSNRNtCNYMAYkk0jidGGr8A">
+<!-- Avoid warning on Google Chrome
+        Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'interest-cohort'.
+        see https://stackoverflow.com/a/75119417
+    -->
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+
+    <!-- Standard metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>InstructGPT | Junshen  Xu</title>
+    <meta name="author" content="Junshen  Xu">
+    <meta name="description" content="Training language models to follow instructions with human feedback">
+    <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
+
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CRoboto+Slab:100,300,400,500,700%7CMaterial+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="/assets/img/favicon_v2.ico">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://daviddmc.github.io/blog/2022/InstructGPT/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    <!-- Distill js -->
+    <script src="/assets/js/distillpub/template.v2.js"></script>
+    <script src="/assets/js/distillpub/transforms.v2.js"></script>
+    <script src="/assets/js/distillpub/overrides.js"></script>
+    
+    <style type="text/css">
+      .highlight pre:not(.language-text) { background-color: #272822; color: #f8f8f2;}
+      .highlight .hll { background-color: #272822; }
+      .highlight .comment { color: #75715e } /* Comment c */
+      .highlight .err { color: #960050; background-color: #1e0010 } /* Error */
+      .highlight .keyword { color: #66d9ef } /* Keyword k*/
+      .highlight .l { color: #ae81ff } /* Literal */
+      .highlight .n { color: #f8f8f2 } /* Name */
+      .highlight .operator { color: #f92672 } /* Operator o*/
+      .highlight .punctuation { color: #f8f8f2 } /* Punctuation p*/
+      .highlight .cm { color: #75715e } /* Comment.Multiline */
+      .highlight .cp { color: #75715e } /* Comment.Preproc */
+      .highlight .c1 { color: #75715e } /* Comment.Single */
+      .highlight .cs { color: #75715e } /* Comment.Special */
+      .highlight .ge { font-style: italic } /* Generic.Emph */
+      .highlight .gs { font-weight: bold } /* Generic.Strong */
+      .highlight .kc { color: #66d9ef } /* Keyword.Constant */
+      .highlight .kd { color: #66d9ef } /* Keyword.Declaration */
+      .highlight .kn { color: #f92672 } /* Keyword.Namespace */
+      .highlight .kp { color: #66d9ef } /* Keyword.Pseudo */
+      .highlight .kr { color: #66d9ef } /* Keyword.Reserved */
+      .highlight .kt { color: #66d9ef } /* Keyword.Type */
+      .highlight .ld { color: #e6db74 } /* Literal.Date */
+      .highlight .number { color: #ae81ff } /* Literal.Number m*/
+      .highlight .string { color: #e6db74 } /* Literal.String s*/
+      .highlight .na { color: #a6e22e } /* Name.Attribute */
+      .highlight .builtin { color: #f8f8f2 } /* Name.Builtin nb*/
+      .highlight .class-name { color: #a6e22e } /* Name.Class nc*/
+      .highlight .no { color: #66d9ef } /* Name.Constant */
+      .highlight .decorator { color: #a6e22e } /* Name.Decorator nd*/
+      .highlight .ni { color: #f8f8f2 } /* Name.Entity */
+      .highlight .ne { color: #a6e22e } /* Name.Exception */
+      .highlight .function { color: #a6e22e } /* Name.Function nf*/
+      .highlight .nl { color: #f8f8f2 } /* Name.Label */
+      .highlight .nn { color: #f8f8f2 } /* Name.Namespace */
+      .highlight .nx { color: #a6e22e } /* Name.Other */
+      .highlight .py { color: #f8f8f2 } /* Name.Property */
+      .highlight .nt { color: #f92672 } /* Name.Tag */
+      .highlight .nv { color: #f8f8f2 } /* Name.Variable */
+      .highlight .ow { color: #f92672 } /* Operator.Word */
+      .highlight .w { color: #f8f8f2 } /* Text.Whitespace */
+      .highlight .mf { color: #ae81ff } /* Literal.Number.Float */
+      .highlight .mh { color: #ae81ff } /* Literal.Number.Hex */
+      .highlight .mi { color: #ae81ff } /* Literal.Number.Integer */
+      .highlight .mo { color: #ae81ff } /* Literal.Number.Oct */
+      .highlight .sb { color: #e6db74 } /* Literal.String.Backtick */
+      .highlight .sc { color: #e6db74 } /* Literal.String.Char */
+      .highlight .sd { color: #e6db74 } /* Literal.String.Doc */
+      .highlight .s2 { color: #e6db74 } /* Literal.String.Double */
+      .highlight .se { color: #ae81ff } /* Literal.String.Escape */
+      .highlight .sh { color: #e6db74 } /* Literal.String.Heredoc */
+      .highlight .si { color: #e6db74 } /* Literal.String.Interpol */
+      .highlight .sx { color: #e6db74 } /* Literal.String.Other */
+      .highlight .sr { color: #e6db74 } /* Literal.String.Regex */
+      .highlight .s1 { color: #e6db74 } /* Literal.String.Single */
+      .highlight .ss { color: #e6db74 } /* Literal.String.Symbol */
+      .highlight .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+      .highlight .vc { color: #f8f8f2 } /* Name.Variable.Class */
+      .highlight .vg { color: #f8f8f2 } /* Name.Variable.Global */
+      .highlight .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+      .highlight .il { color: #ae81ff } /* Literal.Number.Integer.Long */
+      .highlight .gh { } /* Generic Heading & Diff Header */
+      .highlight .gu { color: #75715e; } /* Generic.Subheading & Diff Unified/Comment? */
+      .highlight .gd { color: #f92672; } /* Generic.Deleted & Diff Deleted */
+      .highlight .gi { color: #a6e22e; } /* Generic.Inserted & Diff Inserted */
+    </style>
+    <script> configObj = { "buttonD": "M8 18.568L10.8 21.333 16 16.198 21.2 21.333 24 18.568 16 10.667z", "buttonT": "translate(-1148 -172) translate(832 140) translate(32 32) translate(284)", "shadowSize": "none", "roundnessSize": "999px", "buttonDToBottom": "64px", "buttonDToRight": "32px", "selectedBackgroundColor": "#c2c0bf", "selectedIconColor": "#a31f34", "buttonWidth": "40px", "buttonHeight": "40px", "svgWidth": "32px", "svgHeight": "32px" }; function createButton(obj, pageSimulator) { const body = document.querySelector("body"); backToTopButton = document.createElement("span"); backToTopButton.classList.add("softr-back-to-top-button"); backToTopButton.id = "softr-back-to-top-button"; pageSimulator ? pageSimulator.appendChild(backToTopButton) : body.appendChild(backToTopButton); backToTopButton.style.width = obj.buttonWidth; backToTopButton.style.height = obj.buttonHeight; backToTopButton.style.marginRight = obj.buttonDToRight; backToTopButton.style.marginBottom = obj.buttonDToBottom; backToTopButton.style.borderRadius = obj.roundnessSize; backToTopButton.style.boxShadow = obj.shadowSize; backToTopButton.style.color = obj.selectedBackgroundColor; backToTopButton.style.backgroundColor = obj.selectedBackgroundColor; pageSimulator ? backToTopButton.style.position = "absolute" : backToTopButton.style.position = "fixed"; backToTopButton.style.outline = "none"; backToTopButton.style.bottom = "0px"; backToTopButton.style.right = "0px"; backToTopButton.style.cursor = "pointer"; backToTopButton.style.textAlign = "center"; backToTopButton.style.border = "solid 2px currentColor"; backToTopButton.innerHTML = '<svg class="back-to-top-button-svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" > <g fill="none" fill-rule="evenodd"> <path d="M0 0H32V32H0z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> <path class="back-to-top-button-img" fill-rule="nonzero" d="M11.384 13.333h9.232c.638 0 .958.68.505 1.079l-4.613 4.07c-.28.246-.736.246-1.016 0l-4.613-4.07c-.453-.399-.133-1.079.505-1.079z" transform="translate(-1028 -172) translate(832 140) translate(32 32) translate(164) matrix(1 0 0 -1 0 32)" /> </g> </svg>'; backToTopButtonSvg = document.querySelector(".back-to-top-button-svg"); backToTopButtonSvg.style.verticalAlign = "middle"; backToTopButtonSvg.style.margin = "auto"; backToTopButtonSvg.style.justifyContent = "center"; backToTopButtonSvg.style.width = obj.svgWidth; backToTopButtonSvg.style.height = obj.svgHeight; backToTopButton.appendChild(backToTopButtonSvg); backToTopButtonImg = document.querySelector(".back-to-top-button-img"); backToTopButtonImg.style.fill = obj.selectedIconColor; backToTopButtonSvg.appendChild(backToTopButtonImg); backToTopButtonImg.setAttribute("d", obj.buttonD); backToTopButtonImg.setAttribute("transform", obj.buttonT); if (!pageSimulator) { backToTopButton.style.display = "none"; window.onscroll = function () { if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) { backToTopButton.style.display = "block"; } else { backToTopButton.style.display = "none"; } }; backToTopButton.onclick = function () { document.body.scrollTop = 0; document.documentElement.scrollTop = 0; }; } }; document.addEventListener("DOMContentLoaded", function () { createButton(configObj, null); });</script>
+  </head>
+  
+  <body class="fixed-top-nav">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Junshen </span>Xu</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">about</a>
+              </li>
+              
+              <!-- Blog -->
+              <li class="nav-item active">
+                <a class="nav-link" href="/blog/">blog<span class="sr-only">(current)</span></a>
+              </li>
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/cv/">cv</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/teaching/">teaching</a>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="post distill">
+
+      <d-title>
+        <h1>InstructGPT</h1>
+        <p>Training language models to follow instructions with human feedback</p>
+      </d-title>
+
+      <d-byline>
+          <div class="byline grid">
+            <div>
+              <h3>Published</h3>
+                <p>January 27, 2022</p> 
+            </div>
+            
+            <div>
+              <h3>Paper</h3>
+                <p><a href="https://arxiv.org/pdf/2203.02155.pdf" rel="external nofollow noopener" target="_blank">arXiv</a></p> 
+            </div>
+            
+            
+          </div>
+      </d-byline>
+
+      <d-article>
+        <d-contents>
+          <nav class="l-text figcaption">
+          <h3>Contents</h3>
+            <div><a href="#takeaways">Takeaways</a></div>
+            <div><a href="#introduction">Introduction</a></div>
+            <div><a href="#methods">Methods</a></div>
+            <ul>
+              <li><a href="#high-level-methodology">High-Level Methodology</a></li>
+              <li><a href="#dataset">Dataset</a></li>
+              <li><a href="#models">Models</a></li>
+              
+            </ul>
+<div><a href="#experiments">Experiments</a></div>
+            <ul>
+              <li><a href="#evaluation">Evaluation</a></li>
+              <li><a href="#results-on-the-api-distribution">Results on the API Distribution</a></li>
+              <li><a href="#results-on-public-nlp-datasets">Results on Public NLP Datasets</a></li>
+              <li><a href="#qualitative-results">Qualitative results</a></li>
+              
+            </ul>
+<div><a href="#discussion">Discussion</a></div>
+            <ul>
+              <li><a href="#implications-for-alignment-research">Implications for Alignment Research</a></li>
+              <li><a href="#who-are-we-aligning-to">Who are We Aligning to?</a></li>
+              <li><a href="#limitations">Limitations</a></li>
+              <li><a href="#open-questions">Open Questions</a></li>
+              
+            </ul>
+          </nav>
+        </d-contents>
+
+        <h2 id="takeaways">Takeaways</h2>
+
+<ul>
+  <li>Making LMs bigger does not inherently make them better at following a user’s intent.</li>
+  <li>Reinforcement learning from human feedback (<strong>RLHF</strong>) is a promising direction for aligning LM with user intent.</li>
+  <li>Outputs from the 1.3B InstructGPT model are preferred by humans to outputs from the 175B GPT-3, despite having 100x fewer parameters.</li>
+  <li>InstructGPT shows improvements in truthfulness and reductions in toxic output generation while having minimal performance regressions on public NLP datasets.</li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Making LMs bigger does not inherently make them better at following a user’s intent, i.e., not <em>aligned</em> with their users.</p>
+
+<p>The model may generate outputs that are untruthful, toxic, or not helpful.</p>
+
+<p>This is because the LM objective used for many recent large LMs, i.e., predicting the next token on a webpage from the internet, is different from the objective “follow the user’s instructions helpfully and safely”.</p>
+
+<p>Ideas:</p>
+
+<ul>
+  <li>Aligning language models with user intent on a wide range of tasks by fine-tuning with human feedback.</li>
+  <li>Use reinforcement learning from human feedback (<strong>RLHF</strong>) to fine-tune GPT-3<d-cite key="GPT-3"></d-cite> to follow a broad class of written instructions.</li>
+  <li>This technique uses human preferences as a reward signal to fine-tune the models.</li>
+</ul>
+
+<p>Main Findings:</p>
+
+<ul>
+  <li>Labelers significantly prefer InstructGPT outputs over outputs from GPT-3</li>
+  <li>InstructGPT generalizes to the preferences of “held-out” labelers.</li>
+  <li>Public NLP datasets are not reflective of how our language models are used.</li>
+  <li>InstructGPT models show improvements in truthfulness over GPT-3.</li>
+  <li>InstructGPT shows small improvements in toxicity over GPT-3, but not bias.</li>
+  <li>The performance regressions on public NLP datasets can be minimized by modifying the RLHF fine-tuning procedure.</li>
+  <li>InstructGPT shows promising generalization to instructions outside of the RLHF finetuning distribution.</li>
+  <li>InstructGPT still makes simple mistakes.</li>
+</ul>
+
+<h2 id="methods">Methods</h2>
+
+<h3 id="high-level-methodology">High-Level Methodology</h3>
+
+<ol>
+  <li>Collect demonstration data, and train a supervised policy (supervised fine-tune, <strong>SFT</strong>).</li>
+  <li>Collect comparison data, and train a reward model (<strong>RM</strong>).</li>
+  <li>Optimize a policy against the reward model using <strong>PPO</strong>.</li>
+</ol>
+
+<p>Steps 2 and 3 can be iterated continuously.</p>
+
+<div class="l-page" style="text-align:center;">
+  <img src="https://cdn.openai.com/instruction-following/draft-20220126f/methods.svg" width="100%" style="margin-bottom: 12px; background-color: white;">
+  <p></p>
+</div>
+
+<h3 id="dataset">Dataset</h3>
+
+<h4 id="prompt-dataset">Prompt Dataset</h4>
+
+<ul>
+  <li>Use text prompts submitted to the OpenAI API, specifically those using <em>an earlier version of the InstructGPT models</em>.</li>
+  <li>Deduplicate prompts by checking for prompts that share a long common prefix.</li>
+  <li>Limit the number of prompts to 200 per user ID.</li>
+  <li>Create the train, validation, and test splits based on <em>user ID</em>.</li>
+  <li>Filter all prompts in the training split for personally identifiable information.</li>
+</ul>
+
+<p>For each prompt, the task can be</p>
+
+<ul>
+  <li>a natural language instruction (e.g. “Write a story about a wise frog”),</li>
+  <li>few-shot examples (e.g. giving two examples of frog stories, and prompting the model to generate a new one)</li>
+  <li>an implicit continuation (e.g. providing the start of a story about a frog).</li>
+</ul>
+
+<h4 id="train-the-very-first-instructgpt">Train the Very First InstructGPT</h4>
+
+<p>To train the very first InstructGPT models, the authors asked labelers to <em>write prompts themselves</em>. This is because an initial source of instruction-like prompts is needed to bootstrap the process and these kinds of prompts weren’t often submitted to the regular GPT-3 models on the API.</p>
+
+<p>Three kinds of prompts were written by the labelers:</p>
+<ul>
+  <li>Plain: an arbitrary task, while ensuring the tasks had sufficient diversity.</li>
+  <li>Few-shot: an instruction, and multiple query/response pairs for that instruction.</li>
+  <li>User-based: a prompt corresponding to the use cases stated in waitlist applications to the OpenAI API.</li>
+</ul>
+
+<h4 id="datasets-for-fine-tuning">Datasets for Fine-Tuning</h4>
+
+<p>Three different datasets used in the fine-tuning procedure are built from the prompt dataset.</p>
+
+<ol>
+  <li>
+<strong>SFT:</strong> A prompt is sampled from the prompt dataset, and a labeler writes an answer to this prompt, supervised learning (13k prompts)</li>
+  <li>
+<strong>RM:</strong> A prompt and several model outputs are sampled, and a labeler ranks the outputs from the best to worst. This data is used to train the reward model. (33k prompts)</li>
+  <li>
+<strong>PPO:</strong> Another prompt dataset from the API. This data is used to train PPO with the RM. (31k prompts)</li>
+</ol>
+
+<h4 id="human-data-collection">Human Data Collection</h4>
+
+<p>Hired a team of about 40 labelers.</p>
+
+<p>During training and evaluation, the alignment criteria may come into conflict.</p>
+
+<ul>
+  <li>During training helpfulness to the user is prioritized</li>
+  <li>In the final evaluation truthfulness and harmlessness are prioritized.</li>
+</ul>
+
+<h3 id="models">Models</h3>
+
+<h4 id="sft">SFT</h4>
+
+<ul>
+  <li>Fine-tune GPT-3 on the labeler demonstrations using supervised learning.</li>
+  <li>Select the final SFT model based on the RM score on the validation set.</li>
+</ul>
+
+<h4 id="rm">RM</h4>
+
+<ul>
+  <li>Start from the SFT model with the final unembedding layer removed.</li>
+  <li>Train a model to take in a prompt and response, and output a scalar reward.</li>
+</ul>
+
+<p>Model size: The 6B RMs are used because they save computation and the training of 175B RM could be unstable.</p>
+
+<p>Loss function:</p>
+
+\[L(\theta)=-\frac{1}{K \choose 2}\mathbb{E}_{(x,y_w,y_l)\sim D}[\log(\sigma(r_\theta(x,y_w)- r_\theta(x,y_l)))],\]
+
+<p>where \(r_\theta(x,y)\) is the score outputed by the RM for prompt \(x\) and completion \(y\) with parameters \(\theta\), \(y_w\) is the preferred completion out of the pair of \(y_w\) and \(y_l\), and \(D\) is the dataset of human comparisons.</p>
+
+<h4 id="rl">RL</h4>
+
+<p>Fine-tune the SFT model using PPO.</p>
+
+<p>The environment is a bandit environment that presents a random customer prompt and expects a response to the prompt. Given the prompt and response, it produces a reward determined by the reward model and ends the episode.</p>
+
+<p>In addition, a per-token KL penalty from the SFT model is added at each token to mitigate overoptimization of the reward model.</p>
+
+<p>The value function is initialized from the RM.</p>
+
+<p>An improved algorithm: <strong>PPO-ptx</strong></p>
+
+<ul>
+  <li>Mixing the pretraining gradients into the PPO gradients.</li>
+  <li>
+    <p>Maximize the following combined objective function in RL training</p>
+
+\[\mathbb{E}_{(x,y)\sim D_{\pi_{\phi}^\text{RL}}}[r_{\theta}(x,y)-\beta\log(\pi_\phi^\text{RL}(y|x)/\pi^\text{SFT}(y|x))]+\gamma \mathbb{E}_{x\sim D_\text{pretrain}}[\log(\pi_\phi^\text{RL}(x))],\]
+
+    <p>where \(\pi_\phi^\text{RL}\) is the learned RL policy, \(\pi^\text{SFT}\) is the supervised trained model, and \(D_\text{pretrain}\) is the pretraining distribution.</p>
+  </li>
+  <li>Falling back into PPO when \(\gamma=0\).</li>
+</ul>
+
+<h4 id="baselines">Baselines</h4>
+
+<ul>
+  <li>GPT-3</li>
+  <li>GPT-3-prompted: provide a few-shot prefix to “prompt” GPT-3 into an instruction-following mode</li>
+  <li>GPT-3-FT: fine-tune GPT-3 on a variety of NLP tasks</li>
+</ul>
+
+<h2 id="experiments">Experiments</h2>
+
+<h3 id="evaluation">Evaluation</h3>
+
+<h4 id="definition-of-alignment">Definition of Alignment</h4>
+
+<ul>
+  <li>
+<strong>Helpfulness:</strong>
+    <ul>
+      <li>The model should follow instructions, but also infer intention from a few-shot prompt or another interpretable pattern.</li>
+      <li>The main metric is labeler preference ratings.</li>
+      <li>However, since the labelers are not the users who generated the prompts, there could be a divergence between what a user actually intended and what the labeler thought was intended from only reading the prompt.</li>
+    </ul>
+  </li>
+  <li>
+<strong>Truthfulness (honesty):</strong>
+    <ul>
+      <li>Whether the model’s statements about the world are true.</li>
+      <li>Evaluate the model’s tendency to make up information on closed-domain tasks (“hallucinations”)</li>
+      <li>Use the TruthfulQA dataset.</li>
+    </ul>
+  </li>
+  <li>
+<strong>Harmlessness:</strong>
+    <ul>
+      <li>The harms from language models depend on how their outputs are used in the real world.</li>
+      <li>The labelers evaluate whether the output is inappropriate in the context of a customer assistant, denigrates a protected class, or contains.</li>
+      <li>Benchmark the models on datasets intended to measure bias and toxicity.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="evaluations-on-api-distribution">Evaluations on API Distribution</h4>
+
+<p>The main metric is <em>human preference ratings</em> on a held-out set of prompts from the same source as the training distribution.</p>
+
+<ul>
+  <li>How often the model’s outputs are preferred to a baseline policy (175B SFT model)?</li>
+  <li>The overall quality of each response on a 1-7 Likert scale (given by the labelers).</li>
+</ul>
+
+<h4 id="evaluations-on-public-nlp-datasets">Evaluations on Public NLP Datasets</h4>
+
+<ul>
+  <li>Datasets that capture an aspect of LM safety, particularly truthfulness, toxicity, and bias.</li>
+  <li>Datasets that capture zero-shot performance on traditional NLP tasks, e.g.,
+    <ul>
+      <li>question answering,</li>
+      <li>reading comprehension,</li>
+      <li>summarization.</li>
+    </ul>
+  </li>
+  <li>The RealToxicityPrompts dataset for human evaluations of toxicity.</li>
+</ul>
+
+<h3 id="results-on-the-api-distribution">Results on the API Distribution</h3>
+
+<ul>
+  <li>
+<strong>Labelers significantly prefer InstructGPT outputs over outputs from GPT-3.</strong>
+    <ul>
+      <li>Preference order: PPO-ptx ~ PPO &gt; SFT &gt; GPT-3 (prompted) &gt; GPT-3</li>
+      <li>Outputs from the 1.3B InstructGPT are preferred to outputs from the 175B GPT-3, despite having 100x fewer parameters.</li>
+      <li>Results do not change significantly when evaluated on prompts submitted to GPT-3 models on the API.</li>
+      <li>InstructGPT outperforms GPT along several more concrete axes:
+        <ol>
+          <li>“Attempts correct instruction”</li>
+          <li>“Follows explicit constraints”</li>
+          <li>“Hallucinations”: making up facts</li>
+          <li>“Uses language appropriate for customer assistant”</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+  <li>
+<strong>InstructGPT generalizes to the preferences of “held-out” labelers.</strong>
+    <ul>
+      <li>Held-out labelers (who did not produce any training data) have similar ranking preferences as workers who produce training data.</li>
+    </ul>
+  </li>
+  <li>
+<strong>Public NLP datasets are not reflective of how our language models are used.</strong>
+    <ul>
+      <li>Fine-tune GPT-3 on a variety of NLP tasks (GPT-3-FT)</li>
+      <li>Likert scores ranking: PPO-ptx &gt; SFT &gt; GPT-3 (prompted) ~ GPT-3-FT &gt; GPT-3</li>
+      <li>InstructGPT model outperforms GPT-3-FT for two reasons.
+        <ol>
+          <li>Public NLP datasets are designed to capture tasks that are easy to evaluate with automatic metrics, whereas more than half of the prompts in the API distribution are open-ended generation and brainstorming.</li>
+          <li>It can be difficult for public NLP datasets to obtain a very high diversity of inputs.</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="results-on-public-nlp-datasets">Results on Public NLP Datasets</h3>
+
+<ul>
+  <li>
+<strong>InstructGPT models show improvements in truthfulness over GPT-3.</strong>
+    <ul>
+      <li>InstructGPT generates truthful and informative answers more often than GPT-3.</li>
+      <li>InstructGPT does not have to be specifically instructed to tell the truth to exhibit improved truthfulness.</li>
+      <li>InstructGPT hallucinate (i.e. fabricate information) less often than GPT-3 on closed-domain tasks from our API distribution.</li>
+    </ul>
+  </li>
+  <li>
+<strong>InstructGPT shows small improvements in toxicity over GPT-3, but not bias.</strong>
+    <ul>
+      <li>Obtain automatic toxicity scores of models outputs using  <a href="https://www.perspectiveapi.com" rel="external nofollow noopener" target="_blank">the Perspective API</a>
+</li>
+      <li>Human evaluation: absolute toxicity, toxicity relative to the prompt, continuity, and overall output preference.</li>
+      <li>When instructed to produce a safe and respectful output, InstructGPT models generate less toxic outputs than those from GPT-3. This advantage disappears when the respectful prompt is removed.</li>
+      <li>When explicitly prompted to produce a toxic output, InstructGPT outputs are much more toxic than those from GPT-3.</li>
+      <li>In terms of the propensity to generate biased speech, InstructGPT is <em>not</em> less biased than GPT-3. But when instructed to act respectfully InstructGPT exhibits higher bias.</li>
+    </ul>
+  </li>
+  <li>
+<strong>The performance regressions on public NLP datasets can be minimized by modifying the RLHF fine-tuning procedure.</strong>
+    <ul>
+      <li>InstructGPT (PPO model trained on the API distribution) suffers from performance regressions on several public NLP datasets (alignment tax).</li>
+      <li>Adding pretraining updates (PPO-ptx) mitigates these performance regressions on all datasets.</li>
+      <li>Mixing in pretraining updates performs better than the simpler solution of increasing the KL coefficient.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="qualitative-results">Qualitative results</h3>
+
+<ul>
+  <li>
+<strong>InstructGPT shows promising generalization to instructions outside of the RLHF finetuning distribution.</strong>
+    <ul>
+      <li>InstructGPT shows the ability to follow instructions in non-English languages, and perform summarization and question-answering for code, although non-English languages and code form a tiny minority of the fine-tuning data.</li>
+    </ul>
+  </li>
+  <li>
+<strong>InstructGPT still makes simple mistakes.</strong>
+    <ul>
+      <li>When given an instruction with a false premise, the model sometimes incorrectly assumes the premise is true.</li>
+      <li>The model can overly hedge; when given a simple question, it can sometimes say that there is no one answer to the question and give multiple possible answers, even when there is one fairly clear answer from the context.</li>
+      <li>The model’s performance degrades when instructions contain multiple explicit constraints or when constraints can be challenging for language models.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="discussion">Discussion</h2>
+
+<h3 id="implications-for-alignment-research">Implications for Alignment Research</h3>
+
+<p>This research is part of a broader research program to align AI systems with human intentions.</p>
+
+<p>Lessons for alignment research more generally:</p>
+
+<ul>
+  <li>The cost of increasing model alignment is modest relative to pretraining.</li>
+  <li>There is some evidence that InstructGPT generalizes “following instructions” to settings that people don’t supervise it in.</li>
+  <li>Most of the performance degradations introduced by the fine-tuning can be mitigated.</li>
+  <li>This work has validated alignment techniques from research in the real world.</li>
+</ul>
+
+<h3 id="who-are-we-aligning-to">Who are We Aligning to?</h3>
+
+<p>Factors that influence the fine-tuning data that ultimately determine what and who the models are aligning to.</p>
+
+<ul>
+  <li>Aligning to demonstrations and preferences provided by our training labelers.</li>
+  <li>Aligning to the preferences of the researchers who designed this study.</li>
+  <li>Aligning to what customers think is valuable and what their end-users think is valuable to currently use the API for.</li>
+</ul>
+
+<h3 id="limitations">Limitations</h3>
+
+<h4 id="limitations-of-methodology">Limitations of Methodology</h4>
+
+<ul>
+  <li>The behavior of InstructGPT models is determined in part by the human feedback obtained from the labelers.</li>
+  <li>Some of the labeling tasks rely on value judgments that may be impacted by the identity of the labelers.</li>
+  <li>Most comparisons are only labeled by 1 labeler for cost reasons.</li>
+</ul>
+
+<h4 id="limitations-of-models">Limitations of Models</h4>
+
+<ul>
+  <li>The models are neither fully aligned nor fully safe: still generate toxic or biased outputs, make up facts, and generate sexual and violent content without explicit prompting.</li>
+  <li>The model also fails to generate reasonable outputs on some inputs.</li>
+  <li>In most cases, the model follows the user’s instruction, even if that could lead to harm in the real world.</li>
+</ul>
+
+<h3 id="open-questions">Open Questions</h3>
+
+<ul>
+  <li>Further decrease the models’ propensity to generate toxic, biased, or otherwise harmful outputs.</li>
+  <li>Training the model to be harmless despite user instructions is important but is also difficult because whether an output is harmful depends on the context in which it’s deployed.</li>
+  <li>A promising future path is combining RLHF with other methods of steerability.</li>
+  <li>In addition to RLHF, there are many other algorithms that could be used to train policies on the demonstration and comparison data to get even better results.</li>
+  <li>Comparisons are not necessarily the most efficient way of providing an alignment signal.</li>
+  <li>The proposal for mitigating the alignment tax, by incorporating pretraining data into RLHF finetuning (PPO-ptx), does not completely mitigate performance regressions and may make certain undesirable behaviors more likely for some tasks.</li>
+  <li>A principle-based approach to alignment, i,e, identifying “fair principles” for alignment.</li>
+</ul>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+      <d-bibliography src="/assets/bibliography/paper-notes.bib"></d-bibliography>
+    </div>
+
+    <!-- Footer -->    
+    <footer class="fixed-bottom">
+      <div class="container mt-0">
+        © Copyright 2023 Junshen  Xu. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>.
+Last updated: May 06, 2023.
+      </div>
+    </footer>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NYJ88YK0VS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ window.dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-NYJ88YK0VS');
+  </script>
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+  </body>
+</html>
