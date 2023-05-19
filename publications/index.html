@@ -147,7 +147,7 @@
   <div class="col-sm-2 abbr"><abbr class="badge"><a href="https://dspace.mit.edu/" rel="external nofollow noopener" target="_blank">Thesis</a></abbr></div>
 
   <!-- Entry bib key -->
-  <div id="masterthesisjx" class="col-sm-8 col-md-9">
+  <div id="phdthesisjx" class="col-sm-8 col-md-9">
     <!-- Title -->
     <div class="title">A Robust and Efficient Framework for Slice-to-Volume Reconstruction: Application to Fetal MRI</div>
     <!-- Author -->
@@ -161,7 +161,7 @@
     
     
     <div class="periodical">
-      2023
+      <em>Massachusetts Institute of Technology</em>, 2023
     </div>
     <div class="periodical">
       
@@ -169,12 +169,16 @@
 
     <!-- Links/Buttons -->
     <div class="links">
+      <a class="abstract btn btn-sm z-depth-0" role="button">Abs</a>
     </div>
     
     <div class="badges">
     </div>
 
-    
+    <!-- Hidden abstract block -->
+    <div class="abstract hidden">
+      <p>Volumetric reconstruction in presence of motion is a challenging problem in medical imaging. When imaging moving targets, many modalities are limited to fast 2D imaging techniques that provide cross-sectional snapshots (2D images) of the subject with an attempt to "freeze" in-plane motion. However, inter-slice movement results in slice misalignment in 3D space, i.e., each image being an independent slice that fails to form a coherent volume for diagnosis and analysis. To this end, slice-to-volume reconstruction (SVR) has been proposed to reconstruct a high-quality 3D volume from misaligned 2D observations by performing inter-slice motion correction and super-resolution reconstruction. Existing SVR algorithms, however, have a limited capture range of slice motion and are time-consuming, particularly when producing high-resolution volumes. This thesis proposes a motion-robust and efficient machine learning framework for SVR, motivated by the application of magnetic resonance imaging (MRI) in assessing fetal brain development. We first introduce a slice-to-volume registration transformer that models input slices as a sequence and performs inter-slice motion correction by simultaneously predicting rigid transformations of all images in 3D space. We then reformulate the reconstruction problem using implicit neural representation, where the underlying volume is represented by a continuous function of 3D coordinates. This resolution-agnostic approach allows efficient reconstruction of high-resolution volumes. Finally, we extend this method to data that suffer from non-rigid motion by introducing an implicit motion field that captures slice-dependent deformation. These advances together enable robust and efficient 3D reconstruction and visualization in fetal MRI, benefiting diagnosis and downstream analysis. Additionally, the proposed framework has the potential for broader clinical implications in various applications that involve similar volumetric reconstruction problems.</p>
+    </div>
   </div>
 </div>
 </li>
@@ -840,7 +844,7 @@
   <div class="col-sm-2 abbr"><abbr class="badge"><a href="https://dspace.mit.edu/" rel="external nofollow noopener" target="_blank">Thesis</a></abbr></div>
 
   <!-- Entry bib key -->
-  <div id="phdthesisjx" class="col-sm-8 col-md-9">
+  <div id="masterthesisjx" class="col-sm-8 col-md-9">
     <!-- Title -->
     <div class="title">Online, Low-Latency Decision Making for Fetal Magnetic Resonance Imaging with Machine Learning</div>
     <!-- Author -->
@@ -854,7 +858,7 @@
     
     
     <div class="periodical">
-      <em>Massachusetts Institute of Technology</em>, 2020
+      2020
     </div>
     <div class="periodical">
       
@@ -862,13 +866,17 @@
 
     <!-- Links/Buttons -->
     <div class="links">
+      <a class="abstract btn btn-sm z-depth-0" role="button">Abs</a>
       <a href="https://dspace.mit.edu/handle/1721.1/127446" class="btn btn-sm z-depth-0" role="button" rel="external nofollow noopener" target="_blank">URL</a>
     </div>
     
     <div class="badges">
     </div>
 
-    
+    <!-- Hidden abstract block -->
+    <div class="abstract hidden">
+      <p>Fetal Magnetic Resonance Imaging (MRI) with T2-weighted Half-Fourier-Acquisition Single-Shot Turbo-Spin-Echo (HASTE) sequence plays an important role in diagnosing brain abnormality. However, the quality of HASTE images routinely suffer from fetal motion which leads to image artifacts, incomplete brain coverage as well as longer scan times. To address this problem, interleaved 3D Echo-planar Imaging (EPI) navigators are acquired along with HASTE images, which can provide pose information for prospective motion correction. In this thesis, we first propose a fetal pose estimation model which detects important fetal landmarks from 3D EPI data using a deep convolution neural network. We further demonstrate its capability by applying this model to fetal motion analysis. In an attempt to improve the current fetal MRI protocol, we develop a machine learning based online decision making system for fetal MRI to improve the efficiency of acquiring high quality HASTE images for clinical diagnosis. The proposed system leverages an Image Quality Assessment (IQA) network to determine whether an acquired HASTE slice is contaminated by motion artifacts and improves image quality by re-acquisition. Evaluation on retrospective experiments and in vivo scans suggests that the proposed pipeline can improve image quality with a reasonable number of re-acquisition, potentially enabling a more efficient workflow for fetal brain MRI.</p>
+    </div>
   </div>
 </div>
 </li>
