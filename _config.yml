@@ -123,7 +123,7 @@ bing_site_verification:  # out your bing-site-verification ID (Bing Webmaster)
 # Blog
 # -----------------------------------------------------------------------------
 
-blog_name: Notes # blog_name will be displayed in your blog page
+blog_name: # Notes # blog_name will be displayed in your blog page
 blog_nav_title: blog # your blog must have a title for it to be displayed in the nav bar
 blog_description: Reading notes of papers on a broad range of topics # a simple whitespace theme for academics
 permalink: /blog/:year/:title/
