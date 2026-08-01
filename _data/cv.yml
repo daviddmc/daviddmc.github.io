@@ -1,14 +1,14 @@
-- title: General Information
-  type: map
-  contents:
-    - name: Full Name
-      value: Junshen Xu
-    #- name: Date of Birth
-    #  value: 14th March 1879
-    - name: Email
-      value: junshen [at] mit [dot] edu
-    #- name: Languages
-    #  value: English, Chinese
+# - title: General Information
+#   type: map
+#   contents:
+#     - name: Full Name
+#       value: Junshen Xu
+#     #- name: Date of Birth
+#     #  value: 14th March 1879
+#     - name: Email
+#       value: junshen [at] mit [dot] edu
+#     #- name: Languages
+#     #  value: English, Chinese
 
 - title: Education
   type: time_table
