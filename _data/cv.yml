@@ -33,7 +33,7 @@
   type: time_table
   contents:
     - title: Senior Applied Scientist
-      institution: AWS
+      institution: Amazon Web Services
       year: 2023 - present
       description:
         - Autonomous co-evolving security agents
